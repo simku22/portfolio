@@ -1,4 +1,9 @@
-<!doctype html>
+---
+import { ClientRouter } from 'astro:transitions';
+import Navbar from '../components/Navbar.astro';
+import "../../global.css";
+---
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,14 +11,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro Basics</title>
+    <title>Apparent Altitude</title>
+    <ClientRouter />
   </head>
-  <body>
+  <body class="bg-gray-50 text-gray-900">
+    <Navbar />
     <slot />
   </body>
 </html>
 
-<style>
+<style is:global>
   html,
   body {
     margin: 0;

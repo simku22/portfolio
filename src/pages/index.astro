@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Date from '../components/date.astro';
+import { Image } from 'astro:assets';
+import signatureImg from '../assets/signature.png';
 import "../../global.css";
 ---
 
@@ -12,8 +15,8 @@ import "../../global.css";
       
       <!-- Layer 3: Left side - Signature (1 part) -->
       <div class="flex items-center justify-center md:col-span-1 p-8">
-        <div class="text-6xl font-bold text-gray-800">
-          Signature
+        <div transition:name="signature">
+            <Image src={signatureImg} alt="Signature" class="w-auto object-contain" />
         </div>
       </div>
       
@@ -21,13 +24,7 @@ import "../../global.css";
       <div class="flex items-center justify-center md:col-span-2 p-8">
         <div class="text-lg text-gray-700 leading-relaxed">
           <p class="mb-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-          <p class="mb-4">
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            Hi! I'm Simon. I'm a 4th-year student at the University of Washington studying Informatics (Software Engineering) and Mathematics. This is my personal website, it contains references to my social media, some contact information, and blank space for the future.
           </p>
         </div>
       </div>

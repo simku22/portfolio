@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import signatureImg from '../assets/signature.png';
+import "../../global.css";
+---
+
+<Layout>
+  <!-- Main container -->
+  <div class="min-h-screen px-4 md:px-[10%] pt-24">
+    
+    <!-- Signature in "navbar" position (morph target) -->
+    <div class="fixed top-8 left-8 z-50">
+        <div transition:name="signature">
+             <Image src={signatureImg} alt="Signature" class="h-8 w-auto object-contain" />
+        </div>
+    </div>
+
+    <!-- Content area -->
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold mb-8">Left Page</h1>
+      <div class="text-lg text-gray-700 leading-relaxed space-y-6">
+        <p>
+            This is the left page content. Notice how the "Signature" element has morphed from the center of the left column (on Home) to the top-left corner here.
+        </p>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+         <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+      </div>
+    </div>
+    
+  </div>
+</Layout>
