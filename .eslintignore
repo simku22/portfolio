@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.astro/
+
+# Configuration files
+*.config.mjs
+
+# Environment files
+.env
+.env.*
