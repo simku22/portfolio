@@ -1,11 +1,37 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import "../../global.css";
 ---
 
 <Layout>
-  <Welcome />
+  <!-- Layer 1: Body content with 20% padding on left/right (desktop only) -->
+  <div class="min-h-screen px-0 md:px-[20%]">
+    
+    <!-- Layer 2: Grid system - 1:2 ratio (3 parts total) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 min-h-screen">
+      
+      <!-- Layer 3: Left side - Signature (1 part) -->
+      <div class="flex items-center justify-center md:col-span-1 p-8">
+        <div class="text-6xl font-bold text-gray-800">
+          Signature
+        </div>
+      </div>
+      
+      <!-- Layer 4: Right side - Content (2 parts) -->
+      <div class="flex items-center justify-center md:col-span-2 p-8">
+        <div class="text-lg text-gray-700 leading-relaxed">
+          <p class="mb-4">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p class="mb-4">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 </Layout>
