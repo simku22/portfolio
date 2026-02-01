@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 // import Date from '../components/date.astro';
 import Signature from '../components/signature.astro';
 import ExperienceSection from '../components/ExperienceSection.astro';
+import DarkModeToggle from '../components/DarkModeToggle.astro';
 import { Image } from 'astro:assets';
 import signatureImg from '../assets/signature.png';
 import resumeImg from '../assets/resume.png';
@@ -64,20 +65,33 @@ import "../../global.css";
           <div class="flex gap-4 items-center">
               <a href="https://github.com/simku22" target="_blank" aria-label="GitHub"
                 class="block hover:opacity-75 transition-opacity">
-                <Image src={githubIcon} alt="GitHub" class="w-6 h-6" />
+                <Image src={githubIcon} alt="GitHub" class="w-6 h-6 dark-icon" />
               </a>
               <a href="https://linkedin.com/in/simon-kurgan" target="_blank" aria-label="LinkedIn" class="block hover:opacity-75 transition-opacity">
-                <Image src={linkedinIcon} alt="LinkedIn" class="w-6 h-6" />
+                <Image src={linkedinIcon} alt="LinkedIn" class="w-6 h-6 dark-icon" />
               </a>
               <a href="https://drive.google.com/file/d/1KJ8O8AXgGL2ie6_tQ8Z-Wr51WwV4r_G6/view?usp=sharing" target="_blank" class="hover:opacity-80 w-6 transition-opacity">
-                <Image src={resumeImg} alt="Resume Icon" class="w-7 object-contain" />
+                <Image src={resumeImg} alt="Resume Icon" class="w-7 object-contain dark-icon" />
               </a>
               <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow w-fit">
                 <p class="text-sm font-mono text-gray-800">simku22 [at] uw.edu</p>
               </div>
+              <DarkModeToggle />
           </div>
         </div>
       </div>
     </div>
   </div>
 </Layout>
+
+<style>
+  /* Dark mode - invert icons to white */
+  :global(.dark) .dark-icon {
+    filter: invert(1) brightness(2);
+    transition: filter 0.3s ease;
+  }
+  
+  .dark-icon {
+    transition: filter 0.3s ease;
+  }
+</style>

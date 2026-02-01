@@ -13,8 +13,17 @@ import "../../global.css";
     <meta name="generator" content={Astro.generator} />
     <title>Apparent Altitude</title>
     <ClientRouter />
+    
+    <!-- Prevent flash of wrong theme -->
+    <script is:inline>
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
   </head>
-  <body class="bg-gray-50 text-gray-900">
+  <body>
     <!-- <Navbar /> -->
     <slot />
   </body>
@@ -26,5 +35,48 @@ import "../../global.css";
     margin: 0;
     width: 100%;
     height: 100%;
+  }
+  
+  /* Light mode (default) */
+  body {
+    background-color: #f9fafb;
+    color: #111827;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Dark mode */
+  .dark body {
+    background-color: #111827;
+    color: #f9fafb;
+  }
+  
+  /* Dark mode text colors */
+  .dark .text-gray-700 {
+    color: #d1d5db;
+  }
+  
+  .dark .text-gray-800 {
+    color: #e5e7eb;
+  }
+  
+  .dark .text-gray-600 {
+    color: #9ca3af;
+  }
+  
+  /* Dark mode backgrounds */
+  .dark .bg-white\/80,
+  .dark .bg-white {
+    background-color: rgba(31, 41, 55, 0.8) !important;
+  }
+  
+  /* Dark mode borders */
+  .dark .border-gray-200,
+  .dark .border-gray-300 {
+    border-color: rgb(75, 85, 99) !important;
+  }
+  
+  /* Dark mode signature */
+  .dark #signaturePath {
+    fill: #f9fafb;
   }
 </style>
