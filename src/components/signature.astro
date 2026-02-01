@@ -1,111 +1,272 @@
 ---
-import signature from '../assets/signature.svg';
+// Extract path data and transform from the raw SVG
 import signatureSvg from '../assets/signature.svg?raw';
-import { Image } from 'astro:assets';
 
+// Get the path with its d attribute
 const pathMatch = signatureSvg.match(/<path[^>]*\sd="([^"]+)"/);
 const pathData = pathMatch ? pathMatch[1] : '';
 
+// Get the transform attribute (translate(599,109))
+const transformMatch = signatureSvg.match(/<path[^>]*transform="([^"]+)"/);
+const pathTransform = transformMatch ? transformMatch[1] : '';
+
+// Get original viewBox
 const viewBoxMatch = signatureSvg.match(/viewBox="([^"]+)"/);
-const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 600 300';
+const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 1555 942';
 ---
 
 <div class="signature-container">
-  <!-- The actual signature image -->
-  <Image src={signature} alt="signature" class="signature-image"/>
-  
-  <!-- Overlay SVG for the orb animation -->
   <svg 
-    class="orb-overlay" 
-    viewBox={viewBox} 
+    id="signature-svg"
+    class="signature-svg" 
+    viewBox={viewBox}
     xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
   >
-    <!-- Invisible path for tracking -->
+    <!-- Glow filter for the orb -->
+    <defs>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- The signature path (visible) -->
     <path 
       id="signaturePath" 
       d={pathData}
-      fill="none" 
-      stroke="none"
+      fill="#000000"
+      transform={pathTransform}
     />
     
-    <!-- The orb -->
-    <circle 
-      id="orb" 
-      r="12" 
-      fill="#4a90e2"
-    />
+    <!-- The orb - wrapped in a group with the same transform -->
+    <g transform={pathTransform}>
+      <circle 
+        id="orb" 
+        r="15" 
+        fill="#3b82f6"
+        filter="url(#glow)"
+        style="opacity: 0.9;"
+      />
+    </g>
   </svg>
+  
+  <!-- Tooltip that appears on orb hover -->
+  <div id="orb-tooltip" class="orb-tooltip">
+    <p class="text-sm font-mono text-gray-800">made with anime.js, astro, antigravity</p>
+  </div>
 </div>
 
 <script>
   import { animate } from 'animejs';
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initOrb() {
     const orb = document.getElementById('orb');
     const path = document.getElementById('signaturePath');
-    const signatureImage = document.querySelector('.signature-image');
-    const svgOverlay = document.querySelector('.orb-overlay');
+    const svg = document.getElementById('signature-svg');
     
-    if (orb && path && path instanceof SVGPathElement && signatureImage && svgOverlay) {
-      const imgRect = signatureImage.getBoundingClientRect();
-      
-      // Update the SVG viewBox to match the image's aspect ratio
-      const aspectRatio = imgRect.width / imgRect.height;
-      const viewBoxHeight = 300;
-      const viewBoxWidth = viewBoxHeight * aspectRatio;
-      
-      svgOverlay.setAttribute('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
-      
-      const pathLength = path.getTotalLength();
-      console.log('pathLength:', pathLength);
-      
-      const progress = { value: 0 };
-      
-      animate(progress, {
-        value: pathLength,
-        duration: 8000,
-        loop: true,
-        ease: 'linear'
-      });
-      
-      function updatePosition() {
-        const point = path.getPointAtLength(progress.value);
-        orb.setAttribute('cx', String(point.x));
-        orb.setAttribute('cy', String(point.y));
-        requestAnimationFrame(updatePosition);
-      }
-      
-      updatePosition();
+    if (!orb || !path || !(path instanceof SVGPathElement) || !svg) {
+      console.error('Orb or path not found');
+      return;
     }
-  });
+
+    const pathLength = path.getTotalLength();
+    console.log('Path length:', pathLength);
+
+    // Animation state
+    let isDragging = false;
+    const progressObj = { value: 0 };
+    let pathAnimation: ReturnType<typeof animate> | null = null;
+
+    // Set initial position
+    const initialPoint = path.getPointAtLength(0);
+    orb.setAttribute('cx', String(initialPoint.x));
+    orb.setAttribute('cy', String(initialPoint.y));
+
+    // Create the looping path animation
+    function startPathAnimation() {
+      pathAnimation = animate(progressObj, {
+        value: pathLength,
+        duration: 100000,
+        loop: true,
+        ease: 'linear',
+        onUpdate: () => {
+          if (!isDragging) {
+            const point = path.getPointAtLength(progressObj.value);
+            orb.setAttribute('cx', String(point.x));
+            orb.setAttribute('cy', String(point.y));
+          }
+        }
+      });
+    }
+
+    startPathAnimation();
+
+    // Mouse proximity scaling
+    svg.addEventListener('mousemove', (e: MouseEvent) => {
+      const svgElement = svg as unknown as SVGSVGElement;
+      
+      // Convert screen coords to SVG coords
+      const pt = svgElement.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const ctm = svgElement.getScreenCTM();
+      if (!ctm) return;
+      const svgPoint = pt.matrixTransform(ctm.inverse());
+      
+      // Adjust for the transform offset (599, 109)
+      const mouseX = svgPoint.x - 599;
+      const mouseY = svgPoint.y - 109;
+      
+      if (!isDragging) {
+        // Calculate distance from mouse to orb
+        const orbX = parseFloat(orb.getAttribute('cx') || '0');
+        const orbY = parseFloat(orb.getAttribute('cy') || '0');
+        const distance = Math.sqrt(Math.pow(mouseX - orbX, 2) + Math.pow(mouseY - orbY, 2));
+        
+        // Scale orb based on proximity (closer = bigger)
+        const maxDistance = 150;
+        const minRadius = 40;
+        const maxRadius = 70;
+        const newRadius = minRadius + (maxRadius - minRadius) * Math.max(0, 1 - distance / maxDistance);
+        orb.setAttribute('r', String(newRadius));
+      }
+    });
+
+    // Hover handling - pause animation and show tooltip
+    const tooltip = document.getElementById('orb-tooltip');
+    let isHovering = false;
+
+    orb.addEventListener('mouseenter', () => {
+      isHovering = true;
+      if (pathAnimation && !isDragging) pathAnimation.pause();
+      if (tooltip) {
+        tooltip.style.opacity = '1';
+        tooltip.style.visibility = 'visible';
+      }
+    });
+
+    orb.addEventListener('mouseleave', () => {
+      isHovering = false;
+      if (pathAnimation && !isDragging) pathAnimation.play();
+      if (tooltip) {
+        tooltip.style.opacity = '0';
+        tooltip.style.visibility = 'hidden';
+      }
+    });
+
+    // Drag handling
+    orb.addEventListener('mousedown', (e: Event) => {
+      e.preventDefault();
+      isDragging = true;
+      if (pathAnimation) pathAnimation.pause();
+      orb.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mousemove', (e: MouseEvent) => {
+      if (isDragging && svg) {
+        const svgElement = svg as unknown as SVGSVGElement;
+        const pt = svgElement.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const ctm = svgElement.getScreenCTM();
+        if (!ctm) return;
+        const svgPoint = pt.matrixTransform(ctm.inverse());
+        
+        // Account for the group transform by subtracting the translate offset
+        orb.setAttribute('cx', String(svgPoint.x - 599));
+        orb.setAttribute('cy', String(svgPoint.y - 109));
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        orb.style.cursor = 'pointer';
+        
+        // Get current orb position
+        const currentX = parseFloat(orb.getAttribute('cx') || '0');
+        const currentY = parseFloat(orb.getAttribute('cy') || '0');
+        
+        // Find the target point on path (where animation currently is)
+        const targetPoint = path.getPointAtLength(progressObj.value);
+        
+        // Animate back to the path
+        const orbProxy = { cx: currentX, cy: currentY };
+        
+        animate(orbProxy, {
+          cx: targetPoint.x,
+          cy: targetPoint.y,
+          duration: 800,
+          ease: 'outElastic(1, 0.5)',
+          onUpdate: () => {
+            orb.setAttribute('cx', String(orbProxy.cx));
+            orb.setAttribute('cy', String(orbProxy.cy));
+          },
+          onComplete: () => {
+            if (pathAnimation) pathAnimation.play();
+          }
+        });
+      }
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOrb);
+  } else {
+    initOrb();
+  }
+
+  // Also reinitialize on Astro page transitions
+  document.addEventListener('astro:page-load', initOrb);
 </script>
 
 <style>
   .signature-container {
     position: relative;
     display: inline-block;
-    width: fit-content;  /* Add this */
+    width: 100%;
+    max-width: 400px;
+    z-index: 100;
   }
   
-  .signature-image {
+  .signature-svg {
     display: block;
     width: 100%;
     height: auto;
-  }
-  
-  .orb-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    /* Add this to debug */
-    outline: 2px solid red;
+    overflow: visible;
   }
   
   #orb {
-    pointer-events: auto;
     cursor: pointer;
+    transition: r 0.15s ease-out;
+  }
+  
+  .orb-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgb(229, 231, 235);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+  }
+  
+  .orb-tooltip p {
+    margin: 0;
   }
 </style>
