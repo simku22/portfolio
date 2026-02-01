@@ -1,12 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 // import Date from '../components/date.astro';
+import Signature from '../components/signature.astro';
 import { Image } from 'astro:assets';
 import signatureImg from '../assets/signature.png';
 import resumeImg from '../assets/resume.png';
 import githubIcon from '../assets/github.svg';
 import linkedinIcon from '../assets/linkedin.svg';
 // import amazonIcon from '../assets/amazon.svg';
+// import creativeLogo from '../assets/creativelogo2.png'
 import "../../global.css";
 ---
 
@@ -20,7 +22,8 @@ import "../../global.css";
       <!-- Layer 3: Left side - Signature (1 part) -->
       <div class="flex items-center justify-center md:col-span-1 p-8">
         <div transition:name="signature">
-            <Image src={signatureImg} alt="Signature" class="w-auto object-contain" />
+          <Signature client:load />
+            <!-- <Image src={creativeLogo} alt="Signature" class="w-auto object-contain" /> -->
         </div>
       </div>
       
@@ -58,11 +61,11 @@ import "../../global.css";
                 <Image src={githubIcon} alt="GitHub" class="w-6 h-6" />
               </a>
               <a href="https://linkedin.com/in/simon-kurgan" target="_blank" aria-label="LinkedIn" class="block hover:opacity-75 transition-opacity">
-                    <Image src={linkedinIcon} alt="LinkedIn" class="w-6 h-6" />
+                <Image src={linkedinIcon} alt="LinkedIn" class="w-6 h-6" />
               </a>
-              <a href="https://drive.google.com/file/d/1KJ8O8AXgGL2ie6_tQ8Z-Wr51WwV4r_G6/view?usp=sharing" target="_blank" class="hover:opacity-80 transition-opacity">
-                  <Image src={resumeImg} alt="Resume Icon" class="w-7 object-contain" />
-                </a>
+              <a href="https://drive.google.com/file/d/1KJ8O8AXgGL2ie6_tQ8Z-Wr51WwV4r_G6/view?usp=sharing" target="_blank" class="hover:opacity-80 w-6 transition-opacity">
+                <Image src={resumeImg} alt="Resume Icon" class="w-7 object-contain" />
+              </a>
               <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow w-fit">
                 <p class="text-sm font-mono text-gray-800">simku22 [at] uw.edu</p>
               </div>

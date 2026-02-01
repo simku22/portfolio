@@ -1,0 +1,111 @@
+---
+import signature from '../assets/signature.svg';
+import signatureSvg from '../assets/signature.svg?raw';
+import { Image } from 'astro:assets';
+
+const pathMatch = signatureSvg.match(/<path[^>]*\sd="([^"]+)"/);
+const pathData = pathMatch ? pathMatch[1] : '';
+
+const viewBoxMatch = signatureSvg.match(/viewBox="([^"]+)"/);
+const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 600 300';
+---
+
+<div class="signature-container">
+  <!-- The actual signature image -->
+  <Image src={signature} alt="signature" class="signature-image"/>
+  
+  <!-- Overlay SVG for the orb animation -->
+  <svg 
+    class="orb-overlay" 
+    viewBox={viewBox} 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <!-- Invisible path for tracking -->
+    <path 
+      id="signaturePath" 
+      d={pathData}
+      fill="none" 
+      stroke="none"
+    />
+    
+    <!-- The orb -->
+    <circle 
+      id="orb" 
+      r="12" 
+      fill="#4a90e2"
+    />
+  </svg>
+</div>
+
+<script>
+  import { animate } from 'animejs';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const orb = document.getElementById('orb');
+    const path = document.getElementById('signaturePath');
+    const signatureImage = document.querySelector('.signature-image');
+    const svgOverlay = document.querySelector('.orb-overlay');
+    
+    if (orb && path && path instanceof SVGPathElement && signatureImage && svgOverlay) {
+      const imgRect = signatureImage.getBoundingClientRect();
+      
+      // Update the SVG viewBox to match the image's aspect ratio
+      const aspectRatio = imgRect.width / imgRect.height;
+      const viewBoxHeight = 300;
+      const viewBoxWidth = viewBoxHeight * aspectRatio;
+      
+      svgOverlay.setAttribute('viewBox', `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+      
+      const pathLength = path.getTotalLength();
+      console.log('pathLength:', pathLength);
+      
+      const progress = { value: 0 };
+      
+      animate(progress, {
+        value: pathLength,
+        duration: 8000,
+        loop: true,
+        ease: 'linear'
+      });
+      
+      function updatePosition() {
+        const point = path.getPointAtLength(progress.value);
+        orb.setAttribute('cx', String(point.x));
+        orb.setAttribute('cy', String(point.y));
+        requestAnimationFrame(updatePosition);
+      }
+      
+      updatePosition();
+    }
+  });
+</script>
+
+<style>
+  .signature-container {
+    position: relative;
+    display: inline-block;
+    width: fit-content;  /* Add this */
+  }
+  
+  .signature-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  
+  .orb-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Add this to debug */
+    outline: 2px solid red;
+  }
+  
+  #orb {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+</style>
