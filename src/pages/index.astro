@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 // import Date from '../components/date.astro';
 import Signature from '../components/signature.astro';
+import ExperienceSection from '../components/ExperienceSection.astro';
 import { Image } from 'astro:assets';
 import signatureImg from '../assets/signature.png';
 import resumeImg from '../assets/resume.png';
@@ -38,6 +39,11 @@ import "../../global.css";
 
             Hi! I'm Simon. I'm a 4th-year student at the University of Washington studying Informatics (Software Engineering) and Mathematics. This is my personal website, it contains references to my social media, some contact information, and blank space for the future.
           </p>
+
+          <!-- Expandable Experience & Projects Section -->
+          <div class="mt-6 mb-6">
+            <ExperienceSection client:load />
+          </div>
 
         <!-- <p class="text-2xl text-gray-700 leading-relaxed pt-4">
           Positions and experience
