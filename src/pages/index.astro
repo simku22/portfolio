@@ -1,8 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Date from '../components/date.astro';
+// import Date from '../components/date.astro';
 import { Image } from 'astro:assets';
 import signatureImg from '../assets/signature.png';
+import resumeImg from '../assets/resume.png';
+import githubIcon from '../assets/github.svg';
+import linkedinIcon from '../assets/linkedin.svg';
+// import amazonIcon from '../assets/amazon.svg';
 import "../../global.css";
 ---
 
@@ -23,12 +27,48 @@ import "../../global.css";
       <!-- Layer 4: Right side - Content (2 parts) -->
       <div class="flex items-center justify-center md:col-span-2 p-8">
         <div class="text-lg text-gray-700 leading-relaxed">
+          <!-- <hr class="my-4 border-t border-gray-300" /> -->
           <p class="mb-4">
+            <!-- <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow w-fit">
+              <Date /> 
+            </div> -->
+
             Hi! I'm Simon. I'm a 4th-year student at the University of Washington studying Informatics (Software Engineering) and Mathematics. This is my personal website, it contains references to my social media, some contact information, and blank space for the future.
           </p>
+
+        <!-- <p class="text-2xl text-gray-700 leading-relaxed pt-4">
+          Positions and experience
+        </p>
+
+        <div class="flex justify-between gap-4 mt-8">
+          <div class="text-3xl">
+            Jr Developer
+          </div>
+          <div>
+            <Image src={amazonIcon} alt="amazon logo" class="w-24" />
+          </div>
+        </div> -->
+
+        <hr class="my-4 border-t border-gray-300" />
+         
+        <div class="flex flex-col gap-4 mt-8">
+          <div class="flex gap-4 items-center">
+              <a href="https://github.com/simku22" target="_blank" aria-label="GitHub"
+                class="block hover:opacity-75 transition-opacity">
+                <Image src={githubIcon} alt="GitHub" class="w-6 h-6" />
+              </a>
+              <a href="https://linkedin.com/in/simon-kurgan" target="_blank" aria-label="LinkedIn" class="block hover:opacity-75 transition-opacity">
+                    <Image src={linkedinIcon} alt="LinkedIn" class="w-6 h-6" />
+              </a>
+              <a href="https://drive.google.com/file/d/1KJ8O8AXgGL2ie6_tQ8Z-Wr51WwV4r_G6/view?usp=sharing" target="_blank" class="hover:opacity-80 transition-opacity">
+                  <Image src={resumeImg} alt="Resume Icon" class="w-7 object-contain" />
+                </a>
+              <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow w-fit">
+                <p class="text-sm font-mono text-gray-800">simku22 [at] uw.edu</p>
+              </div>
+          </div>
         </div>
       </div>
-      
     </div>
   </div>
 </Layout>

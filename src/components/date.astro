@@ -1,0 +1,17 @@
+---
+
+---
+
+<span id="current-date-text"></span>
+
+<script>
+  function updateDate() {
+    const dateSpan = document.getElementById("current-date-text");
+    if (dateSpan) {
+      const today = new Date();
+      dateSpan.textContent = today.toLocaleDateString(); 
+    }
+  }
+
+  document.addEventListener('astro:page-load', updateDate);
+</script>
