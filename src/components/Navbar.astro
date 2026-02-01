@@ -1,18 +1,29 @@
 ---
 const pathname = new URL(Astro.request.url).pathname;
-const currentPath = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+const currentPath = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
 ---
 
 <nav class="fixed top-8 left-1/2 -translate-x-1/2 z-50">
-  <div class="bg-white/80 backdrop-blur-md rounded-full px-6 py-3 shadow-sm border border-gray-100 flex items-center gap-4">
-    <a href="/left" aria-label="Left Page" class="group">
-      <div class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === "/left" ? "bg-black scale-110" : "bg-gray-300 hover:bg-gray-400"}`}></div>
-    </a>
-    <a href="/" aria-label="Home Page" class="group">
-      <div class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === "/" ? "bg-black scale-110" : "bg-gray-300 hover:bg-gray-400"}`}></div>
-    </a>
-    <a href="/right" aria-label="Right Page" class="group">
-      <div class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === "/right" ? "bg-black scale-110" : "bg-gray-300 hover:bg-gray-400"}`}></div>
-    </a>
-  </div>
+    <div
+        class="bg-white/80 backdrop-blur-md rounded-full px-6 py-3 shadow-sm border border-gray-100 flex items-center gap-4"
+    >
+        <a href="/left" aria-label="Left Page" class="group">
+            <div
+                class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === '/left' ? 'bg-black scale-110' : 'bg-gray-300 hover:bg-gray-400'}`}
+            >
+            </div>
+        </a>
+        <a href="/" aria-label="Home Page" class="group">
+            <div
+                class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === '/' ? 'bg-black scale-110' : 'bg-gray-300 hover:bg-gray-400'}`}
+            >
+            </div>
+        </a>
+        <a href="/right" aria-label="Right Page" class="group">
+            <div
+                class={`w-3 h-3 rounded-full transition-all duration-300 ${currentPath === '/right' ? 'bg-black scale-110' : 'bg-gray-300 hover:bg-gray-400'}`}
+            >
+            </div>
+        </a>
+    </div>
 </nav>

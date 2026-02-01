@@ -2,147 +2,176 @@
 // DarkModeToggle.astro - Animated sun/moon toggle for dark mode
 ---
 
-<button 
-  id="dark-mode-toggle" 
-  class="dark-mode-toggle" 
-  aria-label="Toggle dark mode"
-  title="Toggle dark mode"
+<button
+    id="dark-mode-toggle"
+    class="dark-mode-toggle"
+    aria-label="Toggle dark mode"
+    title="Toggle dark mode"
 >
-  <!-- Sun icon (shown in dark mode) -->
-  <svg id="sun-icon" class="toggle-icon sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="4"/>
-    <path d="M12 2v2"/>
-    <path d="M12 20v2"/>
-    <path d="m4.93 4.93 1.41 1.41"/>
-    <path d="m17.66 17.66 1.41 1.41"/>
-    <path d="M2 12h2"/>
-    <path d="M20 12h2"/>
-    <path d="m6.34 17.66-1.41 1.41"/>
-    <path d="m19.07 4.93-1.41 1.41"/>
-  </svg>
-  
-  <!-- Moon icon (shown in light mode) -->
-  <svg id="moon-icon" class="toggle-icon moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-  </svg>
+    <!-- Sun icon (shown in dark mode) -->
+    <svg
+        id="sun-icon"
+        class="toggle-icon sun"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2"></path>
+        <path d="M12 20v2"></path>
+        <path d="m4.93 4.93 1.41 1.41"></path>
+        <path d="m17.66 17.66 1.41 1.41"></path>
+        <path d="M2 12h2"></path>
+        <path d="M20 12h2"></path>
+        <path d="m6.34 17.66-1.41 1.41"></path>
+        <path d="m19.07 4.93-1.41 1.41"></path>
+    </svg>
+
+    <!-- Moon icon (shown in light mode) -->
+    <svg
+        id="moon-icon"
+        class="toggle-icon moon"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
 </button>
 
 <script is:inline>
-  (function() {
-    function initDarkMode() {
-      const toggle = document.getElementById('dark-mode-toggle');
-      const sunIcon = document.getElementById('sun-icon');
-      const moonIcon = document.getElementById('moon-icon');
-      
-      if (!toggle || !sunIcon || !moonIcon) {
-        console.error('Dark mode toggle elements not found');
-        return;
-      }
+    (function () {
+        function initDarkMode() {
+            const toggle = document.getElementById('dark-mode-toggle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
 
-      // Check current state and update icons
-      function updateIcons() {
-        const isDark = document.documentElement.classList.contains('dark');
-        if (isDark) {
-          sunIcon.style.opacity = '1';
-          moonIcon.style.opacity = '0';
-        } else {
-          sunIcon.style.opacity = '0';
-          moonIcon.style.opacity = '1';
+            if (!toggle || !sunIcon || !moonIcon) {
+                console.error('Dark mode toggle elements not found');
+                return;
+            }
+
+            // Check current state and update icons
+            function updateIcons() {
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                    sunIcon.style.opacity = '1';
+                    moonIcon.style.opacity = '0';
+                } else {
+                    sunIcon.style.opacity = '0';
+                    moonIcon.style.opacity = '1';
+                }
+            }
+
+            // Initial icon state
+            updateIcons();
+
+            // Remove any existing listener (prevent duplicates)
+            const newToggle = toggle.cloneNode(true);
+            toggle.parentNode.replaceChild(newToggle, toggle);
+
+            // Get the new references
+            const newSunIcon = newToggle.querySelector('.sun');
+            const newMoonIcon = newToggle.querySelector('.moon');
+
+            newToggle.addEventListener('click', function () {
+                const isDarkNow = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+
+                // Update icons with simple transition
+                if (isDarkNow) {
+                    newSunIcon.style.opacity = '1';
+                    newMoonIcon.style.opacity = '0';
+                } else {
+                    newSunIcon.style.opacity = '0';
+                    newMoonIcon.style.opacity = '1';
+                }
+
+                // Add a little click animation
+                newToggle.style.transform = 'scale(0.9)';
+                setTimeout(function () {
+                    newToggle.style.transform = 'scale(1)';
+                }, 100);
+            });
         }
-      }
 
-      // Initial icon state
-      updateIcons();
-
-      // Remove any existing listener (prevent duplicates)
-      const newToggle = toggle.cloneNode(true);
-      toggle.parentNode.replaceChild(newToggle, toggle);
-      
-      // Get the new references
-      const newSunIcon = newToggle.querySelector('.sun');
-      const newMoonIcon = newToggle.querySelector('.moon');
-
-      newToggle.addEventListener('click', function() {
-        const isDarkNow = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
-        
-        // Update icons with simple transition
-        if (isDarkNow) {
-          newSunIcon.style.opacity = '1';
-          newMoonIcon.style.opacity = '0';
+        // Run on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDarkMode);
         } else {
-          newSunIcon.style.opacity = '0';
-          newMoonIcon.style.opacity = '1';
+            initDarkMode();
         }
-        
-        // Add a little click animation
-        newToggle.style.transform = 'scale(0.9)';
-        setTimeout(function() {
-          newToggle.style.transform = 'scale(1)';
-        }, 100);
-      });
-    }
 
-    // Run on DOM ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDarkMode);
-    } else {
-      initDarkMode();
-    }
-    
-    // Re-run on Astro page transitions
-    document.addEventListener('astro:page-load', initDarkMode);
-  })();
+        // Re-run on Astro page transitions
+        document.addEventListener('astro:page-load', initDarkMode);
+    })();
 </script>
 
 <style>
-  .dark-mode-toggle {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgb(229, 231, 235);
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.1s ease;
-  }
-  
-  .dark-mode-toggle:hover {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  }
-  
-  :global(.dark) .dark-mode-toggle {
-    background: rgba(31, 41, 55, 0.8);
-    border-color: rgb(75, 85, 99);
-    color: #f9fafb;
-  }
-  
-  :global(.dark) .dark-mode-toggle:hover {
-    background: rgba(55, 65, 81, 0.95);
-  }
-  
-  .toggle-icon {
-    position: absolute;
-    color: #374151;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-  
-  :global(.dark) .toggle-icon {
-    color: #fbbf24;
-  }
-  
-  .sun {
-    opacity: 0;
-  }
-  
-  .moon {
-    opacity: 1;
-  }
+    .dark-mode-toggle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgb(229, 231, 235);
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition:
+            box-shadow 0.2s ease,
+            background 0.2s ease,
+            transform 0.1s ease;
+    }
+
+    .dark-mode-toggle:hover {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    :global(.dark) .dark-mode-toggle {
+        background: rgba(31, 41, 55, 0.8);
+        border-color: rgb(75, 85, 99);
+        color: #f9fafb;
+    }
+
+    :global(.dark) .dark-mode-toggle:hover {
+        background: rgba(55, 65, 81, 0.95);
+    }
+
+    .toggle-icon {
+        position: absolute;
+        color: #374151;
+        transition:
+            opacity 0.3s ease,
+            transform 0.3s ease;
+    }
+
+    :global(.dark) .toggle-icon {
+        color: #fbbf24;
+    }
+
+    .sun {
+        opacity: 0;
+    }
+
+    .moon {
+        opacity: 1;
+    }
 </style>

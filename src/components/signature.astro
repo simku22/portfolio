@@ -16,379 +16,373 @@ const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 1555 942';
 ---
 
 <div class="signature-container">
-  <svg 
-    id="signature-svg"
-    class="signature-svg" 
-    viewBox={viewBox}
-    xmlns="http://www.w3.org/2000/svg"
-    preserveAspectRatio="xMidYMid meet"
-  >
-    <!-- Glow filter for the orb -->
-    <defs>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
+    <svg
+        id="signature-svg"
+        class="signature-svg"
+        viewBox={viewBox}
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid meet"
+    >
+        <!-- Glow filter for the orb -->
+        <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"></feMergeNode>
+                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+            </filter>
+        </defs>
 
-    <!-- The signature path (visible) -->
-    <path 
-      id="signaturePath" 
-      d={pathData}
-      fill="#000000"
-      transform={pathTransform}
-    />
-    
-    <!-- The orb - wrapped in a group with the same transform -->
-    <g transform={pathTransform}>
-      <circle 
-        id="orb" 
-        r="40" 
-        fill="#3b82f6"
-        filter="url(#glow)"
-        style="opacity: 0.9;"
-      />
-    </g>
-  </svg>
-  
-  <!-- Tooltip that appears on orb hover -->
-  <div id="orb-tooltip" class="orb-tooltip">
-    <p class="text-sm font-mono text-gray-800">made with anime.js, astro, antigravity</p>
-  </div>
+        <!-- The signature path (visible) -->
+        <path id="signaturePath" d={pathData} fill="#000000" transform={pathTransform}></path>
+
+        <!-- The orb - wrapped in a group with the same transform -->
+        <g transform={pathTransform}>
+            <circle id="orb" r="40" fill="#3b82f6" filter="url(#glow)" style="opacity: 0.9;"
+            ></circle>
+        </g>
+    </svg>
+
+    <!-- Tooltip that appears on orb hover -->
+    <div id="orb-tooltip" class="orb-tooltip">
+        <p class="text-sm font-mono text-gray-800">made with anime.js, astro, antigravity</p>
+    </div>
 </div>
 
 <script>
-  import { animate, spring } from 'animejs';
+    import { animate, spring } from 'animejs';
 
-  // Track if we've already initialized (prevents duplicate listeners)
-  let isInitialized = false;
-  let cleanupFn: (() => void) | null = null;
+    // Track if we've already initialized (prevents duplicate listeners)
+    let isInitialized = false;
+    let cleanupFn: (() => void) | null = null;
 
-  function initOrb() {
-    // Clean up previous instance if exists
-    if (cleanupFn) {
-      cleanupFn();
-    }
-
-    const orb = document.getElementById('orb');
-    const path = document.getElementById('signaturePath');
-    const svg = document.getElementById('signature-svg');
-    const tooltip = document.getElementById('orb-tooltip');
-    
-    if (!orb || !path || !(path instanceof SVGPathElement) || !svg) {
-      console.error('Orb or path not found');
-      return;
-    }
-
-    const pathLength = path.getTotalLength();
-
-    // Animation state
-    let isDragging = false;
-    let isHovering = false;
-    let isReturning = false; // Track if return animation is in progress
-    const progressObj = { value: 0 };
-    let pathAnimation: ReturnType<typeof animate> | null = null;
-    
-    // Smooth radius tracking
-    let currentRadius = 40;
-    let targetRadius = 40;
-
-    // Set initial position
-    const initialPoint = path.getPointAtLength(0);
-    orb.setAttribute('cx', String(initialPoint.x));
-    orb.setAttribute('cy', String(initialPoint.y));
-    orb.setAttribute('r', '40');
-
-    // Smooth radius animation frame
-    let radiusAnimationId: number | null = null;
-    function animateRadius() {
-      // Lerp towards target radius for smooth transitions
-      currentRadius += (targetRadius - currentRadius) * 0.15;
-      orb.setAttribute('r', String(currentRadius));
-      
-      if (Math.abs(targetRadius - currentRadius) > 0.1) {
-        radiusAnimationId = requestAnimationFrame(animateRadius);
-      } else {
-        radiusAnimationId = null;
-      }
-    }
-
-    function setTargetRadius(r: number) {
-      targetRadius = r;
-      if (!radiusAnimationId) {
-        radiusAnimationId = requestAnimationFrame(animateRadius);
-      }
-    }
-
-    // Create the looping path animation
-    function startPathAnimation() {
-      pathAnimation = animate(progressObj, {
-        value: pathLength,
-        duration: 100000,
-        loop: true,
-        ease: 'linear',
-        onUpdate: () => {
-          if (!isDragging && !isHovering && !isReturning) {
-            const point = path.getPointAtLength(progressObj.value);
-            orb.setAttribute('cx', String(point.x));
-            orb.setAttribute('cy', String(point.y));
-          }
+    function initOrb() {
+        // Clean up previous instance if exists
+        if (cleanupFn) {
+            cleanupFn();
         }
-      });
-    }
 
-    startPathAnimation();
+        const orb = document.getElementById('orb');
+        const path = document.getElementById('signaturePath');
+        const svg = document.getElementById('signature-svg');
+        const tooltip = document.getElementById('orb-tooltip');
 
-    // Mouse proximity scaling
-    function handleSvgMouseMove(e: MouseEvent) {
-      if (isDragging || isReturning) return;
-      
-      const svgElement = svg as unknown as SVGSVGElement;
-      
-      // Convert screen coords to SVG coords
-      const pt = svgElement.createSVGPoint();
-      pt.x = e.clientX;
-      pt.y = e.clientY;
-      const ctm = svgElement.getScreenCTM();
-      if (!ctm) return;
-      const svgPoint = pt.matrixTransform(ctm.inverse());
-      
-      // Adjust for the transform offset (599, 109)
-      const mouseX = svgPoint.x - 599;
-      const mouseY = svgPoint.y - 109;
-      
-      // Calculate distance from mouse to orb
-      const orbX = parseFloat(orb.getAttribute('cx') || '0');
-      const orbY = parseFloat(orb.getAttribute('cy') || '0');
-      const distance = Math.sqrt(Math.pow(mouseX - orbX, 2) + Math.pow(mouseY - orbY, 2));
-      
-      // Scale orb based on proximity (closer = bigger) - use smooth animation
-      const maxDistance = 150;
-      const minRadius = 40;
-      const maxRadius = 70;
-      const newRadius = minRadius + (maxRadius - minRadius) * Math.max(0, 1 - distance / maxDistance);
-      setTargetRadius(newRadius);
-    }
-    svg.addEventListener('mousemove', handleSvgMouseMove);
+        if (!orb || !path || !(path instanceof SVGPathElement) || !svg) {
+            console.error('Orb or path not found');
+            return;
+        }
 
-    // Hover handling - pause animation and show tooltip
-    function handleOrbEnter() {
-      isHovering = true;
-      if (pathAnimation && !isDragging && !isReturning) pathAnimation.pause();
-      if (tooltip) {
-        tooltip.style.opacity = '1';
-        tooltip.style.visibility = 'visible';
-      }
-    }
-    orb.addEventListener('mouseenter', handleOrbEnter);
+        const pathLength = path.getTotalLength();
 
-    function handleOrbLeave() {
-      isHovering = false;
-      if (pathAnimation && !isDragging && !isReturning) pathAnimation.play();
-      if (tooltip) {
-        tooltip.style.opacity = '0';
-        tooltip.style.visibility = 'hidden';
-      }
-      // Reset radius when leaving
-      setTargetRadius(40);
-    }
-    orb.addEventListener('mouseleave', handleOrbLeave);
+        // Animation state
+        let isDragging = false;
+        let isHovering = false;
+        let isReturning = false; // Track if return animation is in progress
+        const progressObj = { value: 0 };
+        let pathAnimation: ReturnType<typeof animate> | null = null;
 
-    // Drag handling
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let orbStartX = 0;
-    let orbStartY = 0;
-    
-    function handleOrbMouseDown(e: Event) {
-      e.preventDefault();
-      const mouseEvent = e as MouseEvent;
-      isDragging = true;
-      isReturning = false;
-      if (pathAnimation) pathAnimation.pause();
-      orb.style.cursor = 'grabbing';
-      
-      // Hide tooltip while dragging
-      if (tooltip) {
-        tooltip.style.opacity = '0';
-        tooltip.style.visibility = 'hidden';
-      }
-      
-      // Store starting positions
-      dragStartX = mouseEvent.clientX;
-      dragStartY = mouseEvent.clientY;
-      orbStartX = parseFloat(orb.getAttribute('cx') || '0');
-      orbStartY = parseFloat(orb.getAttribute('cy') || '0');
-    }
-    orb.addEventListener('mousedown', handleOrbMouseDown);
+        // Smooth radius tracking
+        let currentRadius = 40;
+        let targetRadius = 40;
 
-    function handleWindowMouseMove(e: MouseEvent) {
-      if (isDragging && svg) {
-        const svgElement = svg as unknown as SVGSVGElement;
-        
-        // Get the scale factor between screen pixels and SVG units
-        const svgRect = svgElement.getBoundingClientRect();
-        const viewBox = svgElement.viewBox.baseVal;
-        const scaleX = viewBox.width / svgRect.width;
-        const scaleY = viewBox.height / svgRect.height;
-        
-        // Calculate delta in screen pixels, then convert to SVG units
-        const deltaX = (e.clientX - dragStartX) * scaleX;
-        const deltaY = (e.clientY - dragStartY) * scaleY;
-        
-        // Apply delta to orb position
-        orb.setAttribute('cx', String(orbStartX + deltaX));
-        orb.setAttribute('cy', String(orbStartY + deltaY));
-      }
-    }
-    window.addEventListener('mousemove', handleWindowMouseMove);
+        // Set initial position
+        const initialPoint = path.getPointAtLength(0);
+        orb.setAttribute('cx', String(initialPoint.x));
+        orb.setAttribute('cy', String(initialPoint.y));
+        orb.setAttribute('r', '40');
 
-    function handleWindowMouseUp() {
-      if (isDragging) {
-        isDragging = false;
-        isReturning = true;
-        orb.style.cursor = 'pointer';
-        
-        // Get current orb position
-        const currentX = parseFloat(orb.getAttribute('cx') || '0');
-        const currentY = parseFloat(orb.getAttribute('cy') || '0');
-        
-        // Find the target point on path (where animation currently is)
-        const targetPoint = path.getPointAtLength(progressObj.value);
-        
-        // Calculate distance for dynamic animation feel
-        const distance = Math.sqrt(
-          Math.pow(targetPoint.x - currentX, 2) + 
-          Math.pow(targetPoint.y - currentY, 2)
-        );
-        
-        // More distance = more bounce!
-        const bounceAmount = Math.min(0.6, 0.3 + (distance / 500) * 0.3);
-        
-        // Animate back to the path with springy boi-oi-oing
-        const orbProxy = { cx: currentX, cy: currentY, scale: 1.3 };
-        
-        // Scale pulse effect
-        animate(orbProxy, {
-          scale: 1,
-          ease: spring({ bounce: bounceAmount, duration: 600 }),
-          onUpdate: () => {
-            if (isReturning) {
-              orb.setAttribute('r', String(40 * orbProxy.scale));
+        // Smooth radius animation frame
+        let radiusAnimationId: number | null = null;
+        function animateRadius() {
+            // Lerp towards target radius for smooth transitions
+            currentRadius += (targetRadius - currentRadius) * 0.15;
+            orb.setAttribute('r', String(currentRadius));
+
+            if (Math.abs(targetRadius - currentRadius) > 0.1) {
+                radiusAnimationId = requestAnimationFrame(animateRadius);
+            } else {
+                radiusAnimationId = null;
             }
-          }
-        });
-        
-        // Position spring animation
-        animate(orbProxy, {
-          cx: targetPoint.x,
-          cy: targetPoint.y,
-          ease: spring({ bounce: bounceAmount, duration: 800 }),
-          onUpdate: () => {
-            if (isReturning) {
-              orb.setAttribute('cx', String(orbProxy.cx));
-              orb.setAttribute('cy', String(orbProxy.cy));
+        }
+
+        function setTargetRadius(r: number) {
+            targetRadius = r;
+            if (!radiusAnimationId) {
+                radiusAnimationId = requestAnimationFrame(animateRadius);
             }
-          },
-          onComplete: () => {
+        }
+
+        // Create the looping path animation
+        function startPathAnimation() {
+            pathAnimation = animate(progressObj, {
+                value: pathLength,
+                duration: 100000,
+                loop: true,
+                ease: 'linear',
+                onUpdate: () => {
+                    if (!isDragging && !isHovering && !isReturning) {
+                        const point = path.getPointAtLength(progressObj.value);
+                        orb.setAttribute('cx', String(point.x));
+                        orb.setAttribute('cy', String(point.y));
+                    }
+                },
+            });
+        }
+
+        startPathAnimation();
+
+        // Mouse proximity scaling
+        function handleSvgMouseMove(e: MouseEvent) {
+            if (isDragging || isReturning) return;
+
+            const svgElement = svg as unknown as SVGSVGElement;
+
+            // Convert screen coords to SVG coords
+            const pt = svgElement.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            const ctm = svgElement.getScreenCTM();
+            if (!ctm) return;
+            const svgPoint = pt.matrixTransform(ctm.inverse());
+
+            // Adjust for the transform offset (599, 109)
+            const mouseX = svgPoint.x - 599;
+            const mouseY = svgPoint.y - 109;
+
+            // Calculate distance from mouse to orb
+            const orbX = parseFloat(orb.getAttribute('cx') || '0');
+            const orbY = parseFloat(orb.getAttribute('cy') || '0');
+            const distance = Math.sqrt(Math.pow(mouseX - orbX, 2) + Math.pow(mouseY - orbY, 2));
+
+            // Scale orb based on proximity (closer = bigger) - use smooth animation
+            const maxDistance = 150;
+            const minRadius = 40;
+            const maxRadius = 70;
+            const newRadius =
+                minRadius + (maxRadius - minRadius) * Math.max(0, 1 - distance / maxDistance);
+            setTargetRadius(newRadius);
+        }
+        svg.addEventListener('mousemove', handleSvgMouseMove);
+
+        // Hover handling - pause animation and show tooltip
+        function handleOrbEnter() {
+            isHovering = true;
+            if (pathAnimation && !isDragging && !isReturning) pathAnimation.pause();
+            if (tooltip) {
+                tooltip.style.opacity = '1';
+                tooltip.style.visibility = 'visible';
+            }
+        }
+        orb.addEventListener('mouseenter', handleOrbEnter);
+
+        function handleOrbLeave() {
+            isHovering = false;
+            if (pathAnimation && !isDragging && !isReturning) pathAnimation.play();
+            if (tooltip) {
+                tooltip.style.opacity = '0';
+                tooltip.style.visibility = 'hidden';
+            }
+            // Reset radius when leaving
+            setTargetRadius(40);
+        }
+        orb.addEventListener('mouseleave', handleOrbLeave);
+
+        // Drag handling
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let orbStartX = 0;
+        let orbStartY = 0;
+
+        function handleOrbMouseDown(e: Event) {
+            e.preventDefault();
+            const mouseEvent = e as MouseEvent;
+            isDragging = true;
             isReturning = false;
-            if (pathAnimation && !isHovering) pathAnimation.play();
-          }
-        });
-      }
+            if (pathAnimation) pathAnimation.pause();
+            orb.style.cursor = 'grabbing';
+
+            // Hide tooltip while dragging
+            if (tooltip) {
+                tooltip.style.opacity = '0';
+                tooltip.style.visibility = 'hidden';
+            }
+
+            // Store starting positions
+            dragStartX = mouseEvent.clientX;
+            dragStartY = mouseEvent.clientY;
+            orbStartX = parseFloat(orb.getAttribute('cx') || '0');
+            orbStartY = parseFloat(orb.getAttribute('cy') || '0');
+        }
+        orb.addEventListener('mousedown', handleOrbMouseDown);
+
+        function handleWindowMouseMove(e: MouseEvent) {
+            if (isDragging && svg) {
+                const svgElement = svg as unknown as SVGSVGElement;
+
+                // Get the scale factor between screen pixels and SVG units
+                const svgRect = svgElement.getBoundingClientRect();
+                const viewBox = svgElement.viewBox.baseVal;
+                const scaleX = viewBox.width / svgRect.width;
+                const scaleY = viewBox.height / svgRect.height;
+
+                // Calculate delta in screen pixels, then convert to SVG units
+                const deltaX = (e.clientX - dragStartX) * scaleX;
+                const deltaY = (e.clientY - dragStartY) * scaleY;
+
+                // Apply delta to orb position
+                orb.setAttribute('cx', String(orbStartX + deltaX));
+                orb.setAttribute('cy', String(orbStartY + deltaY));
+            }
+        }
+        window.addEventListener('mousemove', handleWindowMouseMove);
+
+        function handleWindowMouseUp() {
+            if (isDragging) {
+                isDragging = false;
+                isReturning = true;
+                orb.style.cursor = 'pointer';
+
+                // Get current orb position
+                const currentX = parseFloat(orb.getAttribute('cx') || '0');
+                const currentY = parseFloat(orb.getAttribute('cy') || '0');
+
+                // Find the target point on path (where animation currently is)
+                const targetPoint = path.getPointAtLength(progressObj.value);
+
+                // Calculate distance for dynamic animation feel
+                const distance = Math.sqrt(
+                    Math.pow(targetPoint.x - currentX, 2) + Math.pow(targetPoint.y - currentY, 2)
+                );
+
+                // More distance = more bounce!
+                const bounceAmount = Math.min(0.6, 0.3 + (distance / 500) * 0.3);
+
+                // Animate back to the path with springy boi-oi-oing
+                const orbProxy = { cx: currentX, cy: currentY, scale: 1.3 };
+
+                // Scale pulse effect
+                animate(orbProxy, {
+                    scale: 1,
+                    ease: spring({ bounce: bounceAmount, duration: 600 }),
+                    onUpdate: () => {
+                        if (isReturning) {
+                            orb.setAttribute('r', String(40 * orbProxy.scale));
+                        }
+                    },
+                });
+
+                // Position spring animation
+                animate(orbProxy, {
+                    cx: targetPoint.x,
+                    cy: targetPoint.y,
+                    ease: spring({ bounce: bounceAmount, duration: 800 }),
+                    onUpdate: () => {
+                        if (isReturning) {
+                            orb.setAttribute('cx', String(orbProxy.cx));
+                            orb.setAttribute('cy', String(orbProxy.cy));
+                        }
+                    },
+                    onComplete: () => {
+                        isReturning = false;
+                        if (pathAnimation && !isHovering) pathAnimation.play();
+                    },
+                });
+            }
+        }
+        window.addEventListener('mouseup', handleWindowMouseUp);
+
+        // Cleanup function to remove event listeners
+        cleanupFn = () => {
+            svg.removeEventListener('mousemove', handleSvgMouseMove);
+            orb.removeEventListener('mouseenter', handleOrbEnter);
+            orb.removeEventListener('mouseleave', handleOrbLeave);
+            orb.removeEventListener('mousedown', handleOrbMouseDown);
+            window.removeEventListener('mousemove', handleWindowMouseMove);
+            window.removeEventListener('mouseup', handleWindowMouseUp);
+            if (pathAnimation) pathAnimation.pause();
+            if (radiusAnimationId) cancelAnimationFrame(radiusAnimationId);
+        };
     }
-    window.addEventListener('mouseup', handleWindowMouseUp);
 
-    // Cleanup function to remove event listeners
-    cleanupFn = () => {
-      svg.removeEventListener('mousemove', handleSvgMouseMove);
-      orb.removeEventListener('mouseenter', handleOrbEnter);
-      orb.removeEventListener('mouseleave', handleOrbLeave);
-      orb.removeEventListener('mousedown', handleOrbMouseDown);
-      window.removeEventListener('mousemove', handleWindowMouseMove);
-      window.removeEventListener('mouseup', handleWindowMouseUp);
-      if (pathAnimation) pathAnimation.pause();
-      if (radiusAnimationId) cancelAnimationFrame(radiusAnimationId);
-    };
-  }
-
-  // Initialize only once
-  function init() {
-    if (!isInitialized) {
-      isInitialized = true;
-      initOrb();
+    // Initialize only once
+    function init() {
+        if (!isInitialized) {
+            isInitialized = true;
+            initOrb();
+        }
     }
-  }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-  // Reinitialize on Astro page transitions (cleanup old, start new)
-  document.addEventListener('astro:page-load', () => {
-    isInitialized = false;
-    init();
-  });
+    // Reinitialize on Astro page transitions (cleanup old, start new)
+    document.addEventListener('astro:page-load', () => {
+        isInitialized = false;
+        init();
+    });
 </script>
 
 <style>
-  .signature-container {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    max-width: 400px;
-    z-index: 100;
-  }
-  
-  .signature-svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-  }
-  
-  #orb {
-    cursor: pointer;
-  }
-  
-  .orb-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 0.5rem;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgb(229, 231, 235);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease, background 0.3s ease, border-color 0.3s ease;
-    pointer-events: none;
-  }
-  
-  .orb-tooltip p {
-    margin: 0;
-    transition: color 0.3s ease;
-  }
-  
-  /* Dark mode tooltip */
-  :global(.dark) .orb-tooltip {
-    background: rgba(31, 41, 55, 0.9);
-    border-color: rgb(75, 85, 99);
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-  }
-  
-  :global(.dark) .orb-tooltip p {
-    color: #f9fafb;
-  }
+    .signature-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        max-width: 400px;
+        z-index: 100;
+    }
+
+    .signature-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    #orb {
+        cursor: pointer;
+    }
+
+    .orb-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 0.5rem;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgb(229, 231, 235);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.2s ease,
+            visibility 0.2s ease,
+            background 0.3s ease,
+            border-color 0.3s ease;
+        pointer-events: none;
+    }
+
+    .orb-tooltip p {
+        margin: 0;
+        transition: color 0.3s ease;
+    }
+
+    /* Dark mode tooltip */
+    :global(.dark) .orb-tooltip {
+        background: rgba(31, 41, 55, 0.9);
+        border-color: rgb(75, 85, 99);
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    }
+
+    :global(.dark) .orb-tooltip p {
+        color: #f9fafb;
+    }
 </style>
