@@ -201,19 +201,26 @@
             if (isExpanded) {
                 // Expand content
                 content.style.display = 'block';
+                content.style.opacity = '1'; // Reset opacity from collapse animation
+                content.classList.add('is-expanded');
                 const height = content.scrollHeight;
                 content.style.height = '0px';
                 content.style.overflow = 'hidden';
 
+                // Animate height expansion
                 animate(content, {
                     height: [0, height],
-                    opacity: [0, 1],
-                    ease: spring({ bounce: 0.2, duration: 600 }),
-                    onComplete: () => {
-                        content.style.height = 'auto';
-                        content.style.overflow = 'visible';
-                    },
+                    duration: 800,
+                    ease: 'outExpo',
                 });
+
+                // Set overflow visible after stagger animations complete
+                // Note: We keep height at pixel value (not 'auto') to prevent layout jolt
+                setTimeout(() => {
+                    if (isExpanded) {
+                        content.style.overflow = 'visible';
+                    }
+                }, 850);
             } else {
                 // Collapse content - use faster easing, not spring (springs have long settling time)
                 const height = content.scrollHeight;
@@ -228,6 +235,7 @@
                     onComplete: () => {
                         content.style.display = 'none';
                         content.style.height = '0px';
+                        content.classList.remove('is-expanded');
                     },
                 });
             }
@@ -247,7 +255,6 @@
 <style>
     .experience-section {
         width: 100%;
-        max-width: 800px;
     }
 
     .experience-header {
@@ -323,6 +330,70 @@
 
     .resume-item:last-child {
         margin-bottom: 0;
+    }
+
+    /* Staggered fade-in animations */
+    @keyframes itemFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Base state: items hidden until animation triggers */
+    .section,
+    .resume-item {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    /* When content is expanded, animate sections and items */
+    .experience-content.is-expanded .section {
+        animation: itemFadeIn 0.4s ease-out forwards;
+    }
+
+    .experience-content.is-expanded .resume-item {
+        animation: itemFadeIn 0.4s ease-out forwards;
+    }
+
+    /* Section stagger: Experience section first, then Projects */
+    .experience-content.is-expanded .section:nth-child(1) {
+        animation-delay: 0ms;
+    }
+    .experience-content.is-expanded .section:nth-child(2) {
+        animation-delay: 100ms;
+    }
+
+    /* Item stagger within each section using CSS custom property pattern */
+    .experience-content.is-expanded .section .resume-item:nth-child(1) {
+        animation-delay: calc(var(--section-delay, 0ms) + 80ms);
+    }
+    .experience-content.is-expanded .section .resume-item:nth-child(2) {
+        animation-delay: calc(var(--section-delay, 0ms) + 160ms);
+    }
+    .experience-content.is-expanded .section .resume-item:nth-child(3) {
+        animation-delay: calc(var(--section-delay, 0ms) + 240ms);
+    }
+    .experience-content.is-expanded .section .resume-item:nth-child(4) {
+        animation-delay: calc(var(--section-delay, 0ms) + 320ms);
+    }
+    .experience-content.is-expanded .section .resume-item:nth-child(5) {
+        animation-delay: calc(var(--section-delay, 0ms) + 400ms);
+    }
+    .experience-content.is-expanded .section .resume-item:nth-child(6) {
+        animation-delay: calc(var(--section-delay, 0ms) + 480ms);
+    }
+
+    /* Set section delays via custom property */
+    .experience-content.is-expanded .section:nth-child(1) {
+        --section-delay: 50ms;
+    }
+    .experience-content.is-expanded .section:nth-child(2) {
+        --section-delay: 150ms;
     }
 
     .item-header {
