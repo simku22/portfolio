@@ -27,7 +27,7 @@
     <div id="experience-content" class="experience-content">
         <!-- Experience Section -->
         <div class="section">
-            <h3 class="section-title">Experience</h3>
+            <h3 class="section-title">Work History</h3>
 
             <div class="resume-item">
                 <div class="item-header">
@@ -262,21 +262,15 @@
         align-items: center;
         gap: 0.75rem;
         width: 100%;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        border: 1px solid rgb(229, 231, 235);
-        border-radius: 0.5rem;
+        padding: 0;
+        background: transparent;
+        border: none;
         cursor: pointer;
-        transition:
-            box-shadow 0.2s ease,
-            background 0.2s ease;
+        transition: opacity 0.2s ease;
     }
 
     .experience-header:hover {
-        background: rgba(255, 255, 255, 0.95);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        opacity: 0.8;
     }
 
     .toggle-arrow {
@@ -314,13 +308,13 @@
     }
 
     .section-title {
-        font-size: 1rem;
+        font-size: 0.875rem;
         font-weight: 600;
-        color: #374151;
+        color: #6b7280;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
         margin-bottom: 1rem;
     }
 
@@ -480,15 +474,6 @@
     }
 
     /* Dark mode styles */
-    :global(.dark) .experience-header {
-        background: rgba(31, 41, 55, 0.8);
-        border-color: rgb(75, 85, 99);
-    }
-
-    :global(.dark) .experience-header:hover {
-        background: rgba(55, 65, 81, 0.95);
-    }
-
     :global(.dark) .header-text {
         color: #f9fafb;
     }
@@ -502,7 +487,7 @@
     }
 
     :global(.dark) .section-title {
-        color: #d1d5db;
+        color: #9ca3af;
         border-bottom-color: #4b5563;
     }
 
