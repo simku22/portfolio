@@ -52,71 +52,57 @@
 </button>
 
 <script is:inline>
-    (function () {
-        function initDarkMode() {
-            const toggle = document.getElementById('dark-mode-toggle');
-            const sunIcon = document.getElementById('sun-icon');
-            const moonIcon = document.getElementById('moon-icon');
+    function initDarkMode() {
+        const toggle = document.getElementById('dark-mode-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
 
-            if (!toggle || !sunIcon || !moonIcon) {
-                console.error('Dark mode toggle elements not found');
-                return;
+        if (!toggle || !sunIcon || !moonIcon) return;
+
+        // Check current state and update icons
+        function updateIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            if (isDark) {
+                sunIcon.style.opacity = '1';
+                moonIcon.style.opacity = '0';
+            } else {
+                sunIcon.style.opacity = '0';
+                moonIcon.style.opacity = '1';
             }
-
-            // Check current state and update icons
-            function updateIcons() {
-                const isDark = document.documentElement.classList.contains('dark');
-                if (isDark) {
-                    sunIcon.style.opacity = '1';
-                    moonIcon.style.opacity = '0';
-                } else {
-                    sunIcon.style.opacity = '0';
-                    moonIcon.style.opacity = '1';
-                }
-            }
-
-            // Initial icon state
-            updateIcons();
-
-            // Remove any existing listener (prevent duplicates)
-            const newToggle = toggle.cloneNode(true);
-            toggle.parentNode.replaceChild(newToggle, toggle);
-
-            // Get the new references
-            const newSunIcon = newToggle.querySelector('.sun');
-            const newMoonIcon = newToggle.querySelector('.moon');
-
-            newToggle.addEventListener('click', function () {
-                const isDarkNow = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
-
-                // Update icons with simple transition
-                if (isDarkNow) {
-                    newSunIcon.style.opacity = '1';
-                    newMoonIcon.style.opacity = '0';
-                } else {
-                    newSunIcon.style.opacity = '0';
-                    newMoonIcon.style.opacity = '1';
-                }
-
-                // Add a little click animation
-                newToggle.style.transform = 'scale(0.9)';
-                setTimeout(function () {
-                    newToggle.style.transform = 'scale(1)';
-                }, 100);
-            });
         }
 
-        // Run on DOM ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initDarkMode);
-        } else {
-            initDarkMode();
-        }
+        // Initial icon state
+        updateIcons();
 
-        // Re-run on Astro page transitions
-        document.addEventListener('astro:page-load', initDarkMode);
-    })();
+        // Clone to remove old listeners (if any) and get a fresh element
+        const newToggle = toggle.cloneNode(true);
+        toggle.parentNode.replaceChild(newToggle, toggle);
+
+        const newSunIcon = newToggle.querySelector('.sun');
+        const newMoonIcon = newToggle.querySelector('.moon');
+
+        newToggle.addEventListener('click', () => {
+            const isDarkNow = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+
+            if (isDarkNow) {
+                newSunIcon.style.opacity = '1';
+                newMoonIcon.style.opacity = '0';
+            } else {
+                newSunIcon.style.opacity = '0';
+                newMoonIcon.style.opacity = '1';
+            }
+
+            // Click animation
+            newToggle.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                newToggle.style.transform = 'scale(1)';
+            }, 100);
+        });
+    }
+
+    // Run on every page load (initial + navigation)
+    document.addEventListener('astro:page-load', initDarkMode);
 </script>
 
 <style>

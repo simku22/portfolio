@@ -1,0 +1,105 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import '../../../global.css';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog');
+    return posts.map((post: CollectionEntry<'blog'>) => ({
+        params: { slug: post.slug },
+        props: post,
+    }));
+}
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout>
+    <div class="min-h-screen px-4 md:px-[10%] pt-24 pb-12">
+        <article class="max-w-4xl mx-auto fade-in">
+            <div class="mb-8">
+                <a
+                    href="/blog"
+                    class="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors mb-4 inline-block"
+                >
+                    ← Back to Blog
+                </a>
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                    {post.data.title}
+                </h1>
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                        {
+                            post.data.pubDate.toLocaleDateString('en-us', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })
+                        }
+                    </time>
+                    {
+                        post.data.tags && (
+                            <div class="flex gap-2">
+                                {post.data.tags.map((tag: string) => (
+                                    <span class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs">
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )
+                    }
+                </div>
+            </div>
+
+            <div class="prose dark:prose-invert prose-lg max-w-none">
+                <Content />
+            </div>
+        </article>
+    </div>
+</Layout>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    /* Custom prose styles for better dark mode */
+    :global(.prose) {
+        color: #374151;
+    }
+    :global(.dark .prose) {
+        color: #d1d5db;
+    }
+    :global(.prose h1, .prose h2, .prose h3, .prose h4) {
+        color: #111827;
+        font-family: 'DM Sans', sans-serif;
+    }
+    :global(.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4) {
+        color: #f9fafb;
+    }
+    :global(.prose strong) {
+        color: #111827;
+    }
+    :global(.dark .prose strong) {
+        color: #f9fafb;
+    }
+    :global(.prose a) {
+        color: #3b82f6;
+    }
+    :global(.dark .prose a) {
+        color: #60a5fa;
+    }
+</style>
