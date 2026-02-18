@@ -13,4 +13,6 @@ export default defineConfig({
         remarkPlugins: [remarkMath],
         rehypePlugins: [rehypeKatex],
     },
+    site: 'https://simku22.github.io',
+    base: '/portfolio',
 });
