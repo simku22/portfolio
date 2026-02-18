@@ -43,24 +43,25 @@
                     </div>
                     <ul class="item-bullets">
                         <li>
-                            Migrated a Lambda-based file processing service to Fargate with Java 21 and
-                            virtual threads, implementing streaming I/O to process terabytes of data
-                            with minimal memory during a petabyte-scale migration of billions of files.
+                            Migrated a Lambda-based file processing service to Fargate with Java 21
+                            and virtual threads, implementing streaming I/O to process terabytes of
+                            data with minimal memory during a petabyte-scale migration of billions
+                            of files.
                         </li>
                         <li>
                             Built a workflow observability dashboard for global book publishing with
-                            React and Lambda, providing real-time failure diagnostics that eliminated
-                            cross-system investigation for 25% of on-call tickets.
+                            React and Lambda, providing real-time failure diagnostics that
+                            eliminated cross-system investigation for 25% of on-call tickets.
                         </li>
                         <li>
-                            Replaced 5 manually-scaled CloudSearch domains with serverless OpenSearch
-                            using a DynamoDB Streams pipeline, reducing total storage by 66% through
-                            document consolidation with upsert operations.
+                            Replaced 5 manually-scaled CloudSearch domains with serverless
+                            OpenSearch using a DynamoDB Streams pipeline, reducing total storage by
+                            66% through document consolidation with upsert operations.
                         </li>
                         <li>
                             Embedded debugging tools into a legacy JSP dashboard, consolidating
-                            cross-region checks into a single interface that eliminated 40+ seconds of
-                            navigation per incident.
+                            cross-region checks into a single interface that eliminated 40+ seconds
+                            of navigation per incident.
                         </li>
                     </ul>
                 </div>
@@ -74,7 +75,9 @@
                     <div class="item-header">
                         <div class="item-left">
                             <span class="company">Cvrve</span>
-                            <a href="https://cvrve.me/" target="_blank" class="project-link">cvrve.me</a>
+                            <a href="https://cvrve.me/" target="_blank" class="project-link"
+                                >cvrve.me</a
+                            >
                             <span class="tech">EC2, DuckDB, PostgreSQL, TypeScript, Express</span>
                         </div>
                         <div class="item-right">
@@ -83,18 +86,18 @@
                     </div>
                     <ul class="item-bullets">
                         <li>
-                            Created a bot that streamed 2000+ job postings to over 150,000 total users
-                            in SWE-related discord servers for UW, USC, UCI, and more.
+                            Created a bot that streamed 2000+ job postings to over 150,000 total
+                            users in SWE-related discord servers for UW, USC, UCI, and more.
                         </li>
                         <li>
-                            Built a URL-shortening and analytics service handling 5M+ total clicks with
-                            70K daily peak traffic using Express, DuckDB, EC2, and PostgreSQL on a fully
-                            free-tier stack.
+                            Built a URL-shortening and analytics service handling 5M+ total clicks
+                            with 70K daily peak traffic using Express, DuckDB, EC2, and PostgreSQL
+                            on a fully free-tier stack.
                         </li>
                         <li>
-                            Developed a headless-browser crawler to classify closed job links with 95%+
-                            accuracy, capture screenshots, and create pull requests using Puppeteer and
-                            the GitHub API.
+                            Developed a headless-browser crawler to classify closed job links with
+                            95%+ accuracy, capture screenshots, and create pull requests using
+                            Puppeteer and the GitHub API.
                         </li>
                     </ul>
                 </div>
@@ -103,7 +106,9 @@
                     <div class="item-header">
                         <div class="item-left">
                             <span class="company">Willow</span>
-                            <span class="tech">LangChain, Gemini, Postfix, RabbitMQ, Firebase, TypeScript, Python</span>
+                            <span class="tech"
+                                >LangChain, Gemini, Postfix, RabbitMQ, Firebase, TypeScript, Python</span
+                            >
                         </div>
                         <div class="item-right">
                             <span class="date">June 2025</span>
@@ -115,13 +120,13 @@
                             classification service.
                         </li>
                         <li>
-                            Hosted Postfix and RabbitMQ on an EC2 instance to create a data pipeline,
-                            with LangChain and Gemini 2.0 to extract structured job statuses (e.g.
-                            rejection, interviews) from raw email data.
+                            Hosted Postfix and RabbitMQ on an EC2 instance to create a data
+                            pipeline, with LangChain and Gemini 2.0 to extract structured job
+                            statuses (e.g. rejection, interviews) from raw email data.
                         </li>
                         <li>
-                            Implemented full-stack security using Firebase's authentication service and
-                            displayed classification results on a React dashboard polling from
+                            Implemented full-stack security using Firebase's authentication service
+                            and displayed classification results on a React dashboard polling from
                             Firestore.
                         </li>
                     </ul>
@@ -139,8 +144,8 @@
                     </div>
                     <ul class="item-bullets">
                         <li>
-                            Engineered a cellular automata–based traffic flow simulator and applied dual
-                            annealing to optimize light cycles.
+                            Engineered a cellular automata–based traffic flow simulator and applied
+                            dual annealing to optimize light cycles.
                         </li>
                         <li>
                             Modeled agent traffic through a DAG using Poisson-distributed spawning,
@@ -162,7 +167,8 @@
                     <ul class="item-bullets">
                         <li>
                             Built a streamlined attendance management system with Azure, React, and
-                            ShadCN, enabling easy event creation and attendance tracking via QR codes.
+                            ShadCN, enabling easy event creation and attendance tracking via QR
+                            codes.
                         </li>
                         <li>
                             Designed a RESTful backend with Express using WebSockets and MySQL for
@@ -192,7 +198,7 @@
         newToggle.addEventListener('click', () => {
             isExpanded = !isExpanded;
             newToggle.setAttribute('aria-expanded', String(isExpanded));
-            
+
             if (isExpanded) {
                 content.classList.add('is-expanded');
                 arrow.classList.add('is-rotated');
@@ -237,9 +243,11 @@
     .toggle-arrow {
         flex-shrink: 0;
         color: #6b7280;
-        transition: color 0.2s ease, transform 0.3s ease;
+        transition:
+            color 0.2s ease,
+            transform 0.3s ease;
     }
-    
+
     .toggle-arrow.is-rotated {
         transform: rotate(180deg);
     }
@@ -261,7 +269,10 @@
         padding-top: 0;
         opacity: 0;
         overflow: hidden;
-        transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, padding-top 0.3s ease;
+        transition:
+            grid-template-rows 0.3s ease-out,
+            opacity 0.3s ease-out,
+            padding-top 0.3s ease;
     }
 
     .experience-content.is-expanded {
