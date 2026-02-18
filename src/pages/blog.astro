@@ -12,7 +12,7 @@ const posts = (await getCollection('blog')).sort(
 
 <Layout>
     <div class="min-h-screen px-4 md:px-[10%] pt-24 pb-12">
-        <div class="max-w-4xl mx-auto fade-in">
+        <div class="max-w-4xl mx-auto">
             <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100">Blog</h1>
 
             <div class="grid gap-8">
@@ -57,19 +57,5 @@ const posts = (await getCollection('blog')).sort(
     </div>
 </Layout>
 
-<style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+</Layout>
 
-    .fade-in {
-        animation: fadeInUp 0.5s ease-out forwards;
-    }
-</style>

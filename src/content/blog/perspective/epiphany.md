@@ -1,0 +1,26 @@
+---
+title: 'Why an epiphany isnt around the corner'
+description: 'The grass is sufficiently green here.'
+pubDate: '2026-02-17'
+tags: ['life']
+---
+
+## Why perspective wont help you.
+
+As humans in an always comparative world, we subscribe to the idea that there is a right and a wrong. That someone around us being more successful is an indication of something we are failing to grasp. We dig into this voracious idea of success, brand value, and position as the fruit of knowing something that others (and perhaps we) dont.
+
+To an extent that ideal is true. We are the product of what we do, and in turn what we know. When something adverse happens in your life, perhaps as simple as the occurrence of a pothole on your way to work, you learn to avoid it and pay closer attention so as to mitigate it. We do fundamentally learn - irrespective of if we apply it. However, knowledge is just simply just one machine in the production line of your life.
+
+The throughput of one component, and the overall success of your factory depends not on the strength of one individual unit - but on the next weakest link supporting growth in any one area. To that end, the consumption of self-improvement media, the glaze we bestow upon those around us we prescribe to be more successful than ourselves is much a void as it is a crowbar to leveraging the most out of our lives. 
+
+Einstein once said, *"Any man who reads too much and uses his own brain too little falls into lazy habits of thinking"*. I think that is the maxim that productivity culture fails to understand. Most of this "whos gonna carry the boats", goggin-esque, 12-hour-day nonsense isn't nonsense on its merits - its nonsense when its put into the hands of people who fail to see the bigger picture. Pushing yourself is good, doing more for yourself *is good*. However, the push and pull of letting yourself believe that the next piece of advice will be your savior is what will kill your progress, capture your idealization of your self, and preserve the sense of suffering that made you turn to this content in the first place.
+
+One superb example is in the tech industry. There is endless stratification and prestige-chasing amongst those fortunate enough to either work or be born into this circle, so much so that once-prestigious jobs (note those that can pay hundreds of thousands a year) are relegated to b-tier or worse. Tech workers endlessly compare and strike against others and themselves the point totals of perks, compensation, and career growth as a placation for their empty selves. "Oh you're at Microsoft? It's nothing like quant. Oh you're at quant? What *firm*?". Being at one place over the other isn't just a good gig anymore. If everything in your life revolves around your work, your job is now who you are. One pays more than the other? You're better. One has better job security? You're miles better.
+
+Think about what really happened to cause that stratification. You can look at the alumni who track their way into this companies and you'll see the obvious trend as you climb the ranks of prestige. Those who were in better colleges or programs to begin with will end up in these positions - sure. But there are handfuls of other people who may have been in lesser ranked schools or companies that worked their way in. Some quotient of being offerred an opportunity, some product of preparation and time, and some test of determination or will lead to a job offer, and then a job, and then a title and a position. Did something change about that person that lead them to that success? Something you cannot attain?
+
+Sandwiched inbetween the ideal, perhaps truly unattainable goal you have for yourself and your current self is a realistic ladder you can climb. Maybe you aren't 7 feet tall or destined for the NBA. Ah sure, Terrence Tao is surely much smarter - maybe you wont be the one who gets a fields medal. But does that matter? There is no such thing as perfect, no such thing as one achievement that brings meaning to your suffering or lack theoreof.
+
+To be blunt, you have a certain set of odds, a certain predispotion to friends, access, resources, time, and regions that may or may not make certain opportunities possible. The only factor that you can realistically alter is your persistence, your understanding of yourself, your goals, your limits, and your willingness to make a change. No one trick, no one book, no one gluttonous comparison will show you something you haven't seen before. Put yourself in a position of best odds, practice and be prepared, find a path that is realistic given your capabilities and hold yourself accountable. Accept what you cannot change, and relish in the understanding that achievement will not bring peace.
+
+Try your best to consume meaningfully, think and develop your own ideas and thoughts, and strive to better yourself in a way that doesn't devalue you or your identity. Perhaps the ladder you imagine between you and those around you is less a staircase, and more a smooth curved function. Between one destination and the next isn't a gap in your genes or what you know, but some factor of luck, time, effort, and odds. Perhaps the next step in that ladder truly ISN'T achievable, why kill yourself trying to make the equivalent of a full-court hoop.

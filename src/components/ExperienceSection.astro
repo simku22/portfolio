@@ -25,160 +25,157 @@
 
     <!-- Expandable Content -->
     <div id="experience-content" class="experience-content">
-        <!-- Experience Section -->
-        <div class="section">
-            <h3 class="section-title">Work History</h3>
-
-            <div class="resume-item">
-                <div class="item-header">
-                    <div class="item-left">
-                        <span class="company">Amazon</span>
-                        <span class="role">Software Engineer Intern (Year-Round)</span>
-                        <span class="tech">AWS, TypeScript, Java, Kotlin</span>
+        <div class="experience-inner">
+            <!-- Experience Section -->
+            <div class="section">
+                <h3 class="section-title">Work History</h3>
+                <!-- ... content preserved ... -->
+                <div class="resume-item">
+                    <div class="item-header">
+                        <div class="item-left">
+                            <span class="company">Amazon</span>
+                            <span class="role">Software Engineer Intern (Year-Round)</span>
+                            <span class="tech">AWS, TypeScript, Java, Kotlin</span>
+                        </div>
+                        <div class="item-right">
+                            <span class="date">November 2023 – Present</span>
+                        </div>
                     </div>
-                    <div class="item-right">
-                        <span class="date">November 2023 – Present</span>
-                    </div>
+                    <ul class="item-bullets">
+                        <li>
+                            Migrated a Lambda-based file processing service to Fargate with Java 21 and
+                            virtual threads, implementing streaming I/O to process terabytes of data
+                            with minimal memory during a petabyte-scale migration of billions of files.
+                        </li>
+                        <li>
+                            Built a workflow observability dashboard for global book publishing with
+                            React and Lambda, providing real-time failure diagnostics that eliminated
+                            cross-system investigation for 25% of on-call tickets.
+                        </li>
+                        <li>
+                            Replaced 5 manually-scaled CloudSearch domains with serverless OpenSearch
+                            using a DynamoDB Streams pipeline, reducing total storage by 66% through
+                            document consolidation with upsert operations.
+                        </li>
+                        <li>
+                            Embedded debugging tools into a legacy JSP dashboard, consolidating
+                            cross-region checks into a single interface that eliminated 40+ seconds of
+                            navigation per incident.
+                        </li>
+                    </ul>
                 </div>
-                <ul class="item-bullets">
-                    <li>
-                        Migrated a Lambda-based file processing service to Fargate with Java 21 and
-                        virtual threads, implementing streaming I/O to process terabytes of data
-                        with minimal memory during a petabyte-scale migration of billions of files.
-                    </li>
-                    <li>
-                        Built a workflow observability dashboard for global book publishing with
-                        React and Lambda, providing real-time failure diagnostics that eliminated
-                        cross-system investigation for 25% of on-call tickets.
-                    </li>
-                    <li>
-                        Replaced 5 manually-scaled CloudSearch domains with serverless OpenSearch
-                        using a DynamoDB Streams pipeline, reducing total storage by 66% through
-                        document consolidation with upsert operations.
-                    </li>
-                    <li>
-                        Embedded debugging tools into a legacy JSP dashboard, consolidating
-                        cross-region checks into a single interface that eliminated 40+ seconds of
-                        navigation per incident.
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Projects Section -->
-        <div class="section">
-            <h3 class="section-title">Projects</h3>
-
-            <div class="resume-item">
-                <div class="item-header">
-                    <div class="item-left">
-                        <span class="company">Cvrve</span>
-                        <a href="https://cvrve.me/" target="_blank" class="project-link">cvrve.me</a
-                        >
-                        <span class="tech">EC2, DuckDB, PostgreSQL, TypeScript, Express</span>
-                    </div>
-                    <div class="item-right">
-                        <span class="date">March 2025</span>
-                    </div>
-                </div>
-                <ul class="item-bullets">
-                    <li>
-                        Created a bot that streamed 2000+ job postings to over 150,000 total users
-                        in SWE-related discord servers for UW, USC, UCI, and more.
-                    </li>
-                    <li>
-                        Built a URL-shortening and analytics service handling 5M+ total clicks with
-                        70K daily peak traffic using Express, DuckDB, EC2, and PostgreSQL on a fully
-                        free-tier stack.
-                    </li>
-                    <li>
-                        Developed a headless-browser crawler to classify closed job links with 95%+
-                        accuracy, capture screenshots, and create pull requests using Puppeteer and
-                        the GitHub API.
-                    </li>
-                </ul>
             </div>
 
-            <div class="resume-item">
-                <div class="item-header">
-                    <div class="item-left">
-                        <span class="company">Willow</span>
-                        <span class="tech"
-                            >LangChain, Gemini, Postfix, RabbitMQ, Firebase, TypeScript, Python</span
-                        >
-                    </div>
-                    <div class="item-right">
-                        <span class="date">June 2025</span>
-                    </div>
-                </div>
-                <ul class="item-bullets">
-                    <li>
-                        Lead a team of 2 developers over a 6-month capstone to build a job-mail
-                        classification service.
-                    </li>
-                    <li>
-                        Hosted Postfix and RabbitMQ on an EC2 instance to create a data pipeline,
-                        with LangChain and Gemini 2.0 to extract structured job statuses (e.g.
-                        rejection, interviews) from raw email data.
-                    </li>
-                    <li>
-                        Implemented full-stack security using Firebase's authentication service and
-                        displayed classification results on a React dashboard polling from
-                        Firestore.
-                    </li>
-                </ul>
-            </div>
+            <!-- Projects Section -->
+            <div class="section">
+                <h3 class="section-title">Projects</h3>
 
-            <div class="resume-item">
-                <div class="item-header">
-                    <div class="item-left">
-                        <span class="company">Traffic Light Optimization</span>
-                        <span class="tech">Python, Numpy, Matplotlib, LaTeX</span>
+                <div class="resume-item">
+                    <div class="item-header">
+                        <div class="item-left">
+                            <span class="company">Cvrve</span>
+                            <a href="https://cvrve.me/" target="_blank" class="project-link">cvrve.me</a>
+                            <span class="tech">EC2, DuckDB, PostgreSQL, TypeScript, Express</span>
+                        </div>
+                        <div class="item-right">
+                            <span class="date">March 2025</span>
+                        </div>
                     </div>
-                    <div class="item-right">
-                        <span class="date">June 2025</span>
-                    </div>
+                    <ul class="item-bullets">
+                        <li>
+                            Created a bot that streamed 2000+ job postings to over 150,000 total users
+                            in SWE-related discord servers for UW, USC, UCI, and more.
+                        </li>
+                        <li>
+                            Built a URL-shortening and analytics service handling 5M+ total clicks with
+                            70K daily peak traffic using Express, DuckDB, EC2, and PostgreSQL on a fully
+                            free-tier stack.
+                        </li>
+                        <li>
+                            Developed a headless-browser crawler to classify closed job links with 95%+
+                            accuracy, capture screenshots, and create pull requests using Puppeteer and
+                            the GitHub API.
+                        </li>
+                    </ul>
                 </div>
-                <ul class="item-bullets">
-                    <li>
-                        Engineered a cellular automata–based traffic flow simulator and applied dual
-                        annealing to optimize light cycles.
-                    </li>
-                    <li>
-                        Modeled agent traffic through a DAG using Poisson-distributed spawning,
-                        efficient topological sorting, and linear shortest-path routing.
-                    </li>
-                </ul>
-            </div>
 
-            <div class="resume-item">
-                <div class="item-header">
-                    <div class="item-left">
-                        <span class="company">Attendance Tracker</span>
-                        <span class="tech">Azure, React, Tailwind, ShadCN, MySQL</span>
+                <div class="resume-item">
+                    <div class="item-header">
+                        <div class="item-left">
+                            <span class="company">Willow</span>
+                            <span class="tech">LangChain, Gemini, Postfix, RabbitMQ, Firebase, TypeScript, Python</span>
+                        </div>
+                        <div class="item-right">
+                            <span class="date">June 2025</span>
+                        </div>
                     </div>
-                    <div class="item-right">
-                        <span class="date">June 2024</span>
-                    </div>
+                    <ul class="item-bullets">
+                        <li>
+                            Lead a team of 2 developers over a 6-month capstone to build a job-mail
+                            classification service.
+                        </li>
+                        <li>
+                            Hosted Postfix and RabbitMQ on an EC2 instance to create a data pipeline,
+                            with LangChain and Gemini 2.0 to extract structured job statuses (e.g.
+                            rejection, interviews) from raw email data.
+                        </li>
+                        <li>
+                            Implemented full-stack security using Firebase's authentication service and
+                            displayed classification results on a React dashboard polling from
+                            Firestore.
+                        </li>
+                    </ul>
                 </div>
-                <ul class="item-bullets">
-                    <li>
-                        Built a streamlined attendance management system with Azure, React, and
-                        ShadCN, enabling easy event creation and attendance tracking via QR codes.
-                    </li>
-                    <li>
-                        Designed a RESTful backend with Express using WebSockets and MySQL for
-                        real-time event joining and storage.
-                    </li>
-                </ul>
+
+                <div class="resume-item">
+                    <div class="item-header">
+                        <div class="item-left">
+                            <span class="company">Traffic Light Optimization</span>
+                            <span class="tech">Python, Numpy, Matplotlib, LaTeX</span>
+                        </div>
+                        <div class="item-right">
+                            <span class="date">June 2025</span>
+                        </div>
+                    </div>
+                    <ul class="item-bullets">
+                        <li>
+                            Engineered a cellular automata–based traffic flow simulator and applied dual
+                            annealing to optimize light cycles.
+                        </li>
+                        <li>
+                            Modeled agent traffic through a DAG using Poisson-distributed spawning,
+                            efficient topological sorting, and linear shortest-path routing.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="resume-item">
+                    <div class="item-header">
+                        <div class="item-left">
+                            <span class="company">Attendance Tracker</span>
+                            <span class="tech">Azure, React, Tailwind, ShadCN, MySQL</span>
+                        </div>
+                        <div class="item-right">
+                            <span class="date">June 2024</span>
+                        </div>
+                    </div>
+                    <ul class="item-bullets">
+                        <li>
+                            Built a streamlined attendance management system with Azure, React, and
+                            ShadCN, enabling easy event creation and attendance tracking via QR codes.
+                        </li>
+                        <li>
+                            Designed a RESTful backend with Express using WebSockets and MySQL for
+                            real-time event joining and storage.
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    import { animate, spring } from 'animejs';
-
     function initExperienceSection() {
         const toggle = document.getElementById('experience-toggle');
         const content = document.getElementById('experience-content');
@@ -186,58 +183,22 @@
 
         if (!toggle || !content || !arrow) return;
 
+        // Clean up previous listeners if re-initializing
+        const newToggle = toggle.cloneNode(true) as HTMLElement;
+        toggle.parentNode?.replaceChild(newToggle, toggle);
+
         let isExpanded = false;
 
-        toggle.addEventListener('click', () => {
+        newToggle.addEventListener('click', () => {
             isExpanded = !isExpanded;
-            toggle.setAttribute('aria-expanded', String(isExpanded));
-
-            // Animate arrow rotation with spring
-            animate(arrow, {
-                rotate: isExpanded ? 180 : 0,
-                ease: spring({ bounce: 0.4, duration: 500 }),
-            });
-
+            newToggle.setAttribute('aria-expanded', String(isExpanded));
+            
             if (isExpanded) {
-                // Expand content
-                content.style.display = 'block';
-                content.style.opacity = '1'; // Reset opacity from collapse animation
                 content.classList.add('is-expanded');
-                const height = content.scrollHeight;
-                content.style.height = '0px';
-                content.style.overflow = 'hidden';
-
-                // Animate height expansion
-                animate(content, {
-                    height: [0, height],
-                    duration: 800,
-                    ease: 'outExpo',
-                });
-
-                // Set overflow visible after stagger animations complete
-                // Note: We keep height at pixel value (not 'auto') to prevent layout jolt
-                setTimeout(() => {
-                    if (isExpanded) {
-                        content.style.overflow = 'visible';
-                    }
-                }, 850);
+                arrow.classList.add('is-rotated');
             } else {
-                // Collapse content - use faster easing, not spring (springs have long settling time)
-                const height = content.scrollHeight;
-                content.style.height = height + 'px';
-                content.style.overflow = 'hidden';
-
-                animate(content, {
-                    height: [height, 0],
-                    opacity: [1, 0],
-                    duration: 250,
-                    ease: 'outQuad',
-                    onComplete: () => {
-                        content.style.display = 'none';
-                        content.style.height = '0px';
-                        content.classList.remove('is-expanded');
-                    },
-                });
+                content.classList.remove('is-expanded');
+                arrow.classList.remove('is-rotated');
             }
         });
     }
@@ -276,7 +237,11 @@
     .toggle-arrow {
         flex-shrink: 0;
         color: #6b7280;
-        transition: color 0.2s ease;
+        transition: color 0.2s ease, transform 0.3s ease;
+    }
+    
+    .toggle-arrow.is-rotated {
+        transform: rotate(180deg);
     }
 
     .experience-header:hover .toggle-arrow {
@@ -289,14 +254,25 @@
         color: #1f2937;
     }
 
+    /* Grid transition for smooth height animation */
     .experience-content {
-        display: none;
-        padding: 0;
-        margin-top: 0.5rem;
+        display: grid;
+        grid-template-rows: 0fr;
+        padding-top: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, padding-top 0.3s ease;
     }
 
-    .experience-content[style*='block'] {
-        padding: 1rem;
+    .experience-content.is-expanded {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        padding-top: 0.5rem;
+    }
+
+    .experience-inner {
+        min-height: 0;
+        /* Padding moved to content to avoid grid issues */
     }
 
     .section {
@@ -326,68 +302,11 @@
         margin-bottom: 0;
     }
 
-    /* Staggered fade-in animations */
-    @keyframes itemFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Base state: items hidden until animation triggers */
+    /* Base state: items visible */
     .section,
     .resume-item {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    /* When content is expanded, animate sections and items */
-    .experience-content.is-expanded .section {
-        animation: itemFadeIn 0.4s ease-out forwards;
-    }
-
-    .experience-content.is-expanded .resume-item {
-        animation: itemFadeIn 0.4s ease-out forwards;
-    }
-
-    /* Section stagger: Experience section first, then Projects */
-    .experience-content.is-expanded .section:nth-child(1) {
-        animation-delay: 0ms;
-    }
-    .experience-content.is-expanded .section:nth-child(2) {
-        animation-delay: 100ms;
-    }
-
-    /* Item stagger within each section using CSS custom property pattern */
-    .experience-content.is-expanded .section .resume-item:nth-child(1) {
-        animation-delay: calc(var(--section-delay, 0ms) + 80ms);
-    }
-    .experience-content.is-expanded .section .resume-item:nth-child(2) {
-        animation-delay: calc(var(--section-delay, 0ms) + 160ms);
-    }
-    .experience-content.is-expanded .section .resume-item:nth-child(3) {
-        animation-delay: calc(var(--section-delay, 0ms) + 240ms);
-    }
-    .experience-content.is-expanded .section .resume-item:nth-child(4) {
-        animation-delay: calc(var(--section-delay, 0ms) + 320ms);
-    }
-    .experience-content.is-expanded .section .resume-item:nth-child(5) {
-        animation-delay: calc(var(--section-delay, 0ms) + 400ms);
-    }
-    .experience-content.is-expanded .section .resume-item:nth-child(6) {
-        animation-delay: calc(var(--section-delay, 0ms) + 480ms);
-    }
-
-    /* Set section delays via custom property */
-    .experience-content.is-expanded .section:nth-child(1) {
-        --section-delay: 50ms;
-    }
-    .experience-content.is-expanded .section:nth-child(2) {
-        --section-delay: 150ms;
+        opacity: 1;
+        transform: none;
     }
 
     .item-header {

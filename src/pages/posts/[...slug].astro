@@ -18,7 +18,7 @@ const { Content } = await post.render();
 
 <Layout>
     <div class="min-h-screen px-4 md:px-[10%] pt-24 pb-12">
-        <article class="max-w-4xl mx-auto fade-in">
+        <article class="max-w-4xl mx-auto">
             <div class="mb-8">
                 <a
                     href="/blog"
@@ -61,19 +61,22 @@ const { Content } = await post.render();
 </Layout>
 
 <style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* Increase spacing for headers */
+    :global(.prose h2) {
+        margin-top: 2.5em;
+        margin-bottom: 0.8em;
     }
-
-    .fade-in {
-        animation: fadeInUp 0.5s ease-out forwards;
+    :global(.prose h3) {
+        margin-top: 2em;
+        margin-bottom: 0.6em;
+    }
+    :global(.prose p) {
+        margin-bottom: 1.25em;
+        line-height: 1.8;
+    }
+    :global(.prose li) {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
     }
 
     /* Custom prose styles for better dark mode */
