@@ -2,6 +2,8 @@
 // ExperienceSection.astro - Expandable experience & projects with card-based design
 import { Image } from 'astro:assets';
 import amazonLogo from '../assets/amazon.svg';
+import traffic1 from '../assets/projects/traffic-1.jpg';
+import traffic2 from '../assets/projects/traffic-2.jpg';
 ---
 
 <div class="experience-section">
@@ -81,6 +83,7 @@ import amazonLogo from '../assets/amazon.svg';
             <div class="cards-group">
                 <div class="group-label">Projects</div>
 
+                <!-- Cvrve -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
@@ -118,6 +121,7 @@ import amazonLogo from '../assets/amazon.svg';
                     </ul>
                 </div>
 
+                <!-- Willow -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
@@ -154,6 +158,7 @@ import amazonLogo from '../assets/amazon.svg';
                     </ul>
                 </div>
 
+                <!-- Traffic Light Optimization -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
@@ -169,6 +174,14 @@ import amazonLogo from '../assets/amazon.svg';
                             </div>
                         </div>
                     </div>
+                    <div class="img-stack" aria-label="Project screenshots">
+                        <div class="img-stack-item">
+                            <Image src={traffic1} alt="Traffic simulation" class="stack-img" widths={[300, 400]} sizes="200px" />
+                        </div>
+                        <div class="img-stack-item">
+                            <Image src={traffic2} alt="Traffic results" class="stack-img" widths={[300, 400]} sizes="200px" />
+                        </div>
+                    </div>
                     <ul class="card-bullets">
                         <li>
                             Engineered a cellular automata–based traffic flow simulator and applied
@@ -181,6 +194,7 @@ import amazonLogo from '../assets/amazon.svg';
                     </ul>
                 </div>
 
+                <!-- Attendance Tracker -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
@@ -215,7 +229,7 @@ import amazonLogo from '../assets/amazon.svg';
     </div>
 </div>
 
-<script>
+<script is:inline>
     function initExperienceSection() {
         const toggle = document.getElementById('experience-toggle');
         const content = document.getElementById('experience-content');
@@ -224,12 +238,12 @@ import amazonLogo from '../assets/amazon.svg';
         if (!toggle || !content || !arrow) return;
 
         // Clean up previous listeners if re-initializing
-        const newToggle = toggle.cloneNode(true) as HTMLElement;
+        const newToggle = toggle.cloneNode(true);
         toggle.parentNode?.replaceChild(newToggle, toggle);
 
         let isExpanded = false;
 
-        newToggle.addEventListener('click', () => {
+        newToggle.addEventListener('click', function() {
             isExpanded = !isExpanded;
             newToggle.setAttribute('aria-expanded', String(isExpanded));
 
@@ -243,7 +257,31 @@ import amazonLogo from '../assets/amazon.svg';
         });
     }
 
-    // Initialize
+    // Image stack fan-out via event delegation (works regardless of DOM timing)
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        var stack = target.closest('.img-stack');
+
+        if (stack) {
+            e.stopPropagation();
+            var wasFanned = stack.classList.contains('is-fanned');
+            // Close all stacks
+            document.querySelectorAll('.img-stack.is-fanned').forEach(function(s) {
+                s.classList.remove('is-fanned');
+            });
+            // Toggle clicked one
+            if (!wasFanned) {
+                stack.classList.add('is-fanned');
+            }
+        } else {
+            // Clicked outside — close all
+            document.querySelectorAll('.img-stack.is-fanned').forEach(function(s) {
+                s.classList.remove('is-fanned');
+            });
+        }
+    });
+
+    // Initialize toggle
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initExperienceSection);
     } else {
@@ -389,20 +427,6 @@ import amazonLogo from '../assets/amazon.svg';
         width: 1.5rem;
     }
 
-    .card-icon {
-        flex-shrink: 0;
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: 0.5rem;
-        background: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6b7280;
-        margin-top: 0.125rem;
-    }
-
     /* ── Meta (title row, role, tags) ── */
     .card-meta {
         flex: 1;
@@ -478,6 +502,85 @@ import amazonLogo from '../assets/amazon.svg';
         line-height: 1.4;
     }
 
+    /* ═══════════════ Image stack (fan-out) ═══════════════ */
+    .img-stack {
+        position: relative;
+        height: 5.5rem;
+        margin: 0.625rem 0 0.25rem 0;
+        /* Fixed height — no layout shift */
+    }
+
+    .img-stack-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 7rem;
+        height: 5rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 2px solid #e5e7eb;
+        background: #f9fafb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition:
+            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            filter 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+    .stack-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* ── Resting state: stacked with slight offsets ── */
+    .img-stack-item:nth-child(1) {
+        z-index: 2;
+        transform: rotate(-2deg) translate(0, 0);
+    }
+
+    .img-stack-item:nth-child(2) {
+        z-index: 1;
+        transform: rotate(1.5deg) translate(1.5rem, 0.25rem);
+    }
+
+    .img-stack-item:nth-child(3) {
+        z-index: 0;
+        transform: rotate(4deg) translate(3rem, 0.5rem);
+    }
+
+    /* ── Hover state: fan out on click (toggle .is-fanned) ── */
+    .img-stack.is-fanned .img-stack-item:nth-child(1) {
+        transform: rotate(-1deg) translate(0, 0) scale(1.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        z-index: 10;
+    }
+
+    .img-stack.is-fanned .img-stack-item:nth-child(2) {
+        transform: rotate(0.5deg) translate(7.5rem, 0) scale(1.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        z-index: 9;
+    }
+
+    .img-stack.is-fanned .img-stack-item:nth-child(3) {
+        transform: rotate(1deg) translate(15rem, 0) scale(1.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        z-index: 8;
+    }
+
+    /* Single image stack */
+    .img-stack-single .img-stack-item:nth-child(1) {
+        transform: rotate(0deg);
+    }
+
+    .img-stack-single.is-fanned .img-stack-item:nth-child(1) {
+        transform: scale(1.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
     /* ── Bullet list ── */
     .card-bullets {
         margin: 0.625rem 0 0 0;
@@ -511,8 +614,7 @@ import amazonLogo from '../assets/amazon.svg';
             gap: 0.625rem;
         }
 
-        .card-logo,
-        .card-icon {
+        .card-logo {
             width: 2rem;
             height: 2rem;
         }
@@ -523,6 +625,28 @@ import amazonLogo from '../assets/amazon.svg';
 
         .amazon-logo {
             width: 1.25rem;
+        }
+
+        /* Smaller images on mobile */
+        .img-stack {
+            height: 4.5rem;
+        }
+
+        .img-stack-item {
+            width: 5.5rem;
+            height: 4rem;
+        }
+
+        .img-stack-item:nth-child(2) {
+            transform: rotate(1.5deg) translate(1rem, 0.25rem);
+        }
+
+        .img-stack:hover .img-stack-item:nth-child(2) {
+            transform: rotate(0.5deg) translate(6rem, 0) scale(1.04);
+        }
+
+        .img-stack:hover .img-stack-item:nth-child(3) {
+            transform: rotate(1deg) translate(12rem, 0) scale(1.04);
         }
     }
 
@@ -556,12 +680,6 @@ import amazonLogo from '../assets/amazon.svg';
     :global(.dark) .card-logo {
         background: rgba(55, 65, 81, 0.6);
         border-color: #4b5563;
-    }
-
-    :global(.dark) .card-icon {
-        background: rgba(55, 65, 81, 0.6);
-        border-color: #4b5563;
-        color: #9ca3af;
     }
 
     :global(.dark) .card-company {
@@ -599,5 +717,18 @@ import amazonLogo from '../assets/amazon.svg';
 
     :global(.dark) .amazon-logo {
         filter: brightness(0) invert(1);
+    }
+
+    :global(.dark) .img-stack-item {
+        border-color: #4b5563;
+        background: #1f2937;
+    }
+
+    :global(.dark) .img-stack-item:hover {
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    :global(.dark) .img-stack:hover .img-stack-item {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
 </style>
