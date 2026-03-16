@@ -255,6 +255,15 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
                 arrow.classList.remove('is-rotated');
             }
         });
+
+        // Keep logo square (aspect-ratio doesn't work with flex stretch)
+        function syncLogoSquare() {
+            document.querySelectorAll('.card-logo').forEach(function(logo) {
+                logo.style.width = logo.offsetHeight + 'px';
+            });
+        }
+        syncLogoSquare();
+        window.addEventListener('resize', syncLogoSquare);
     }
 
     // Image stack fan-out via event delegation (works regardless of DOM timing)
@@ -399,14 +408,13 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     /* ── Card top row: logo + meta ── */
     .card-top {
         display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 0.875rem;
     }
 
     .card-logo {
         flex-shrink: 0;
-        width: 2.25rem;
-        height: 2.25rem;
+        aspect-ratio: 1;
         border-radius: 0.5rem;
         background: #f9fafb;
         border: 1px solid #e5e7eb;
@@ -414,17 +422,16 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        margin-top: 0.125rem;
     }
 
     .logo-img {
-        width: 1.75rem;
+        width: 65%;
         height: auto;
         object-fit: contain;
     }
 
     .amazon-logo {
-        width: 1.5rem;
+        width: 60%;
     }
 
     /* ── Meta (title row, role, tags) ── */
@@ -615,8 +622,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         }
 
         .card-logo {
-            width: 2rem;
-            height: 2rem;
+            border-radius: 0.375rem;
         }
 
         .logo-img {
