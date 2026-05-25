@@ -2,6 +2,7 @@
 // ExperienceSection.astro - Expandable experience & projects with card-based design
 import { Image } from 'astro:assets';
 import amazonLogo from '../assets/amazon.svg';
+import mathAiLabLogo from '../assets/math-ai-lab.jpeg';
 import traffic1 from '../assets/projects/traffic-1.jpg';
 import traffic2 from '../assets/projects/traffic-2.jpg';
 ---
@@ -30,50 +31,142 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     <!-- Expandable Content -->
     <div id="experience-content" class="experience-content">
         <div class="experience-inner">
-
             <!-- Work Experience -->
             <div class="cards-group">
                 <div class="group-label">Work</div>
+
+                <!-- Amazon: stacked roles (incoming full-time + year-round intern) -->
                 <div class="card">
                     <div class="card-top">
-                        <div class="card-logo">
-                            <Image src={amazonLogo} alt="Amazon" class="logo-img amazon-logo" />
+                        <div class="card-logo card-logo-lg">
+                            <Image
+                                src={amazonLogo}
+                                alt="Amazon"
+                                class="logo-img amazon-logo"
+                            />
                         </div>
                         <div class="card-meta">
                             <div class="card-title-row">
                                 <span class="card-company">Amazon</span>
                                 <span class="card-date">Nov 2023 – Present</span>
                             </div>
-                            <span class="card-role">Software Engineer Intern (Year-Round)</span>
+                            <span class="card-subtle">Seattle, WA</span>
+                        </div>
+                    </div>
+
+                    <!-- Role 1: Prime Air (incoming full-time) -->
+                    <div class="role-block role-block-current">
+                        <div class="role-header">
+                            <div class="role-title-wrap">
+                                <span class="role-title">Software Engineer, Prime Air</span>
+                                <span class="drone" aria-hidden="true">
+                                    <svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Body -->
+                                        <rect x="26" y="18" width="12" height="6" rx="2" fill="currentColor" opacity="0.85" />
+                                        <!-- Arms -->
+                                        <line x1="16" y1="14" x2="28" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                        <line x1="48" y1="14" x2="36" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                        <line x1="16" y1="28" x2="28" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                        <line x1="48" y1="28" x2="36" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                                        <!-- Package -->
+                                        <rect x="28" y="24" width="8" height="6" fill="currentColor" opacity="0.6" />
+                                        <!-- Propellers (animated) -->
+                                        <g class="prop prop-tl" style="transform-origin: 16px 14px;">
+                                            <ellipse cx="16" cy="14" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
+                                        </g>
+                                        <g class="prop prop-tr" style="transform-origin: 48px 14px;">
+                                            <ellipse cx="48" cy="14" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
+                                        </g>
+                                        <g class="prop prop-bl" style="transform-origin: 16px 28px;">
+                                            <ellipse cx="16" cy="28" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
+                                        </g>
+                                        <g class="prop prop-br" style="transform-origin: 48px 28px;">
+                                            <ellipse cx="48" cy="28" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
+                                        </g>
+                                    </svg>
+                                </span>
+                            </div>
+                            <span class="role-date">Incoming Jun 2026</span>
+                        </div>
+                        <div class="card-tags">
+                            <span class="tag">Full-time</span>
+                            <span class="tag">Drone Delivery</span>
+                            <span class="tag">Robotics</span>
+                        </div>
+                    </div>
+
+                    <!-- Role 2: Year-Round Intern -->
+                    <div class="role-block">
+                        <div class="role-header">
+                            <span class="role-title">Software Engineer Intern (Year-Round)</span>
+                            <span class="role-date">Nov 2023 – Jun 2026</span>
+                        </div>
+                        <div class="card-tags">
+                            <span class="tag">AWS</span>
+                            <span class="tag">TypeScript</span>
+                            <span class="tag">Java</span>
+                            <span class="tag">Kotlin</span>
+                        </div>
+                        <ul class="card-bullets">
+                            <li>
+                                Migrated a Lambda-based file processing service to Fargate with Java 21
+                                and virtual threads, implementing streaming I/O to process terabytes of
+                                data with minimal memory during a petabyte-scale migration of billions
+                                of files.
+                            </li>
+                            <li>
+                                Built a workflow observability dashboard for global book publishing with
+                                React and Lambda, providing real-time failure diagnostics that
+                                eliminated cross-system investigation for 25% of on-call tickets.
+                            </li>
+                            <li>
+                                Replaced 5 manually-scaled CloudSearch domains with serverless
+                                OpenSearch using a DynamoDB Streams pipeline, reducing total storage by
+                                66% through document consolidation with upsert operations.
+                            </li>
+                            <li>
+                                Embedded debugging tools into a legacy JSP dashboard, consolidating
+                                cross-region checks into a single interface that eliminated 40+ seconds
+                                of navigation per incident.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- UW Math AI Lab -->
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-logo card-logo-lg">
+                            <Image
+                                src={mathAiLabLogo}
+                                alt="UW Math AI Lab"
+                                class="logo-img math-ai-logo"
+                                widths={[80, 160]}
+                                sizes="56px"
+                            />
+                        </div>
+                        <div class="card-meta">
+                            <div class="card-title-row">
+                                <span class="card-company">UW Math AI Lab</span>
+                                <span class="card-date">Feb 2026 – Present</span>
+                            </div>
+                            <span class="card-role">Undergraduate Researcher</span>
                             <div class="card-tags">
-                                <span class="tag">AWS</span>
-                                <span class="tag">TypeScript</span>
-                                <span class="tag">Java</span>
-                                <span class="tag">Kotlin</span>
+                                <span class="tag">Lean</span>
+                                <span class="tag">Mathlib</span>
+                                <span class="tag">Knowledge Graphs</span>
+                                <span class="tag">Formal Math</span>
                             </div>
                         </div>
                     </div>
                     <ul class="card-bullets">
                         <li>
-                            Migrated a Lambda-based file processing service to Fargate with Java 21
-                            and virtual threads, implementing streaming I/O to process terabytes of
-                            data with minimal memory during a petabyte-scale migration of billions
-                            of files.
+                            Building knowledge graphs over formalized mathematics in Lean / Mathlib to
+                            surface structural relationships between definitions, theorems, and proofs.
                         </li>
                         <li>
-                            Built a workflow observability dashboard for global book publishing with
-                            React and Lambda, providing real-time failure diagnostics that
-                            eliminated cross-system investigation for 25% of on-call tickets.
-                        </li>
-                        <li>
-                            Replaced 5 manually-scaled CloudSearch domains with serverless
-                            OpenSearch using a DynamoDB Streams pipeline, reducing total storage by
-                            66% through document consolidation with upsert operations.
-                        </li>
-                        <li>
-                            Embedded debugging tools into a legacy JSP dashboard, consolidating
-                            cross-region checks into a single interface that eliminated 40+ seconds
-                            of navigation per incident.
+                            Designing tooling to make the corpus tractable for downstream ML — search,
+                            retrieval, and graph-augmented prompting over the dependency network.
                         </li>
                     </ul>
                 </div>
@@ -193,38 +286,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
                         </li>
                     </ul>
                 </div>
-
-                <!-- Attendance Tracker -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="card-meta">
-                            <div class="card-title-row">
-                                <span class="card-company">Attendance Tracker</span>
-                                <span class="card-date">June 2024</span>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">Azure</span>
-                                <span class="tag">React</span>
-                                <span class="tag">Tailwind</span>
-                                <span class="tag">ShadCN</span>
-                                <span class="tag">MySQL</span>
-                            </div>
-                        </div>
-                    </div>
-                    <ul class="card-bullets">
-                        <li>
-                            Built a streamlined attendance management system with Azure, React, and
-                            ShadCN, enabling easy event creation and attendance tracking via QR
-                            codes.
-                        </li>
-                        <li>
-                            Designed a RESTful backend with Express using WebSockets and MySQL for
-                            real-time event joining and storage.
-                        </li>
-                    </ul>
-                </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -243,7 +305,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
 
         let isExpanded = false;
 
-        newToggle.addEventListener('click', function() {
+        newToggle.addEventListener('click', function () {
             isExpanded = !isExpanded;
             newToggle.setAttribute('aria-expanded', String(isExpanded));
 
@@ -258,7 +320,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     }
 
     // Image stack fan-out via event delegation (works regardless of DOM timing)
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         var target = e.target;
         var stack = target.closest('.img-stack');
 
@@ -266,7 +328,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
             e.stopPropagation();
             var wasFanned = stack.classList.contains('is-fanned');
             // Close all stacks
-            document.querySelectorAll('.img-stack.is-fanned').forEach(function(s) {
+            document.querySelectorAll('.img-stack.is-fanned').forEach(function (s) {
                 s.classList.remove('is-fanned');
             });
             // Toggle clicked one
@@ -275,7 +337,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
             }
         } else {
             // Clicked outside — close all
-            document.querySelectorAll('.img-stack.is-fanned').forEach(function(s) {
+            document.querySelectorAll('.img-stack.is-fanned').forEach(function (s) {
                 s.classList.remove('is-fanned');
             });
         }
@@ -408,23 +470,45 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         width: 2.25rem;
         height: 2.25rem;
         border-radius: 0.5rem;
-        background: #f9fafb;
+        background: #ffffff;
         border: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
         margin-top: 0.125rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Larger app-icon style container for work logos */
+    .card-logo-lg {
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 0.75rem;
+        padding: 0.5rem;
+        background: #ffffff;
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.04),
+            0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .logo-img {
-        width: 1.75rem;
-        height: auto;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
     }
 
     .amazon-logo {
-        width: 1.5rem;
+        width: 100%;
+        height: auto;
+        max-height: 1.5rem;
+    }
+
+    .math-ai-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.375rem;
     }
 
     /* ── Meta (title row, role, tags) ── */
@@ -451,9 +535,16 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     }
 
     .card-company {
-        font-size: 0.9375rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #111827;
+        letter-spacing: -0.01em;
+    }
+
+    .card-subtle {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: -0.125rem;
     }
 
     .card-date {
@@ -483,6 +574,106 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         text-underline-offset: 2px;
     }
 
+    /* ── Role blocks (stacked roles in one card) ── */
+    .role-block {
+        margin-top: 0.875rem;
+        padding-top: 0.875rem;
+        border-top: 1px dashed #e5e7eb;
+    }
+
+    .role-block-current {
+        position: relative;
+    }
+
+    .role-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.375rem;
+    }
+
+    .role-title-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .role-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .role-date {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .role-block-current .role-date {
+        color: #2563eb;
+        font-weight: 500;
+    }
+
+    /* ── Animated drone ── */
+    .drone {
+        display: inline-flex;
+        width: 2.25rem;
+        height: 1.5rem;
+        color: #2563eb;
+        animation: drone-hover 2.6s ease-in-out infinite;
+        transform-origin: center;
+        vertical-align: middle;
+    }
+
+    .drone svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+
+    .prop {
+        animation: prop-spin 0.18s linear infinite;
+    }
+
+    @keyframes prop-spin {
+        from {
+            transform: scaleX(1);
+        }
+        50% {
+            transform: scaleX(0.1);
+        }
+        to {
+            transform: scaleX(-1);
+        }
+    }
+
+    @keyframes drone-hover {
+        0%,
+        100% {
+            transform: translate(0, 0) rotate(-2deg);
+        }
+        25% {
+            transform: translate(2px, -2px) rotate(1deg);
+        }
+        50% {
+            transform: translate(0, -3px) rotate(3deg);
+        }
+        75% {
+            transform: translate(-2px, -1px) rotate(-1deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .drone,
+        .prop {
+            animation: none;
+        }
+    }
+
     /* ── Tech tags ── */
     .card-tags {
         display: flex;
@@ -507,7 +698,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         position: relative;
         height: 5.5rem;
         margin: 0.625rem 0 0.25rem 0;
-        /* Fixed height — no layout shift */
     }
 
     .img-stack-item {
@@ -536,7 +726,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         display: block;
     }
 
-    /* ── Resting state: stacked with slight offsets ── */
     .img-stack-item:nth-child(1) {
         z-index: 2;
         transform: rotate(-2deg) translate(0, 0);
@@ -552,7 +741,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         transform: rotate(4deg) translate(3rem, 0.5rem);
     }
 
-    /* ── Hover state: fan out on click (toggle .is-fanned) ── */
     .img-stack.is-fanned .img-stack-item:nth-child(1) {
         transform: rotate(-1deg) translate(0, 0) scale(1.04);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
@@ -569,16 +757,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         transform: rotate(1deg) translate(15rem, 0) scale(1.04);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
         z-index: 8;
-    }
-
-    /* Single image stack */
-    .img-stack-single .img-stack-item:nth-child(1) {
-        transform: rotate(0deg);
-    }
-
-    .img-stack-single.is-fanned .img-stack-item:nth-child(1) {
-        transform: scale(1.04);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     }
 
     /* ── Bullet list ── */
@@ -611,7 +789,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         }
 
         .card-top {
-            gap: 0.625rem;
+            gap: 0.75rem;
         }
 
         .card-logo {
@@ -619,15 +797,16 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
             height: 2rem;
         }
 
-        .logo-img {
-            width: 1.5rem;
+        .card-logo-lg {
+            width: 2.75rem;
+            height: 2.75rem;
+            padding: 0.375rem;
         }
 
         .amazon-logo {
-            width: 1.25rem;
+            max-height: 1.25rem;
         }
 
-        /* Smaller images on mobile */
         .img-stack {
             height: 4.5rem;
         }
@@ -639,14 +818,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
 
         .img-stack-item:nth-child(2) {
             transform: rotate(1.5deg) translate(1rem, 0.25rem);
-        }
-
-        .img-stack:hover .img-stack-item:nth-child(2) {
-            transform: rotate(0.5deg) translate(6rem, 0) scale(1.04);
-        }
-
-        .img-stack:hover .img-stack-item:nth-child(3) {
-            transform: rotate(1deg) translate(12rem, 0) scale(1.04);
         }
     }
 
@@ -678,12 +849,28 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     }
 
     :global(.dark) .card-logo {
-        background: rgba(55, 65, 81, 0.6);
-        border-color: #4b5563;
+        background: #ffffff;
+        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.2),
+            0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    :global(.dark) .card-logo-lg {
+        background: #ffffff;
+    }
+
+    /* Don't invert Amazon — it's already on white card-logo in dark mode */
+    :global(.dark) .amazon-logo {
+        filter: none;
     }
 
     :global(.dark) .card-company {
         color: #f9fafb;
+    }
+
+    :global(.dark) .card-subtle {
+        color: #6b7280;
     }
 
     :global(.dark) .card-date {
@@ -692,6 +879,22 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
 
     :global(.dark) .card-role {
         color: #9ca3af;
+    }
+
+    :global(.dark) .role-title {
+        color: #e5e7eb;
+    }
+
+    :global(.dark) .role-block {
+        border-top-color: rgba(75, 85, 99, 0.5);
+    }
+
+    :global(.dark) .role-block-current .role-date {
+        color: #60a5fa;
+    }
+
+    :global(.dark) .drone {
+        color: #60a5fa;
     }
 
     :global(.dark) .tag {
@@ -715,10 +918,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         color: #93c5fd;
     }
 
-    :global(.dark) .amazon-logo {
-        filter: brightness(0) invert(1);
-    }
-
     :global(.dark) .img-stack-item {
         border-color: #4b5563;
         background: #1f2937;
@@ -726,9 +925,5 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
 
     :global(.dark) .img-stack-item:hover {
         box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
-    }
-
-    :global(.dark) .img-stack:hover .img-stack-item {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
 </style>

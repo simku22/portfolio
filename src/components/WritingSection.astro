@@ -1,0 +1,306 @@
+---
+// WritingSection.astro - Expandable inline writing list, mirrors ExperienceSection styling
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+    (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
+        b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<div class="writing-section">
+    <button id="writing-toggle" class="writing-header" aria-expanded="false">
+        <svg
+            id="writing-arrow"
+            class="writing-arrow"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path d="M6 9l6 6 6-6"></path>
+        </svg>
+        <span class="header-text">Writing</span>
+        <span class="count-pill">{posts.length}</span>
+    </button>
+
+    <div id="writing-content" class="writing-content">
+        <div class="writing-inner">
+            {
+                posts.length === 0 ? (
+                    <p class="empty">Nothing published yet — check back soon.</p>
+                ) : (
+                    <ul class="post-list">
+                        {posts.map((post) => (
+                            <li class="post-item">
+                                <a
+                                    href={`${import.meta.env.BASE_URL}/posts/${post.slug}/`}
+                                    class="post-link"
+                                >
+                                    <div class="post-title-row">
+                                        <span class="post-title">{post.data.title}</span>
+                                        <time
+                                            class="post-date"
+                                            datetime={post.data.pubDate.toISOString()}
+                                        >
+                                            {post.data.pubDate.toLocaleDateString('en-us', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                            })}
+                                        </time>
+                                    </div>
+                                    {post.data.description && (
+                                        <p class="post-desc">{post.data.description}</p>
+                                    )}
+                                    {post.data.tags && (
+                                        <div class="post-tags">
+                                            {post.data.tags.map((tag: string) => (
+                                                <span class="tag">#{tag}</span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                )
+            }
+        </div>
+    </div>
+</div>
+
+<script is:inline>
+    function initWritingSection() {
+        const toggle = document.getElementById('writing-toggle');
+        const content = document.getElementById('writing-content');
+        const arrow = document.getElementById('writing-arrow');
+        if (!toggle || !content || !arrow) return;
+
+        const newToggle = toggle.cloneNode(true);
+        toggle.parentNode?.replaceChild(newToggle, toggle);
+        const freshArrow = newToggle.querySelector('#writing-arrow');
+
+        let isExpanded = false;
+        newToggle.addEventListener('click', function () {
+            isExpanded = !isExpanded;
+            newToggle.setAttribute('aria-expanded', String(isExpanded));
+            if (isExpanded) {
+                content.classList.add('is-expanded');
+                freshArrow?.classList.add('is-rotated');
+            } else {
+                content.classList.remove('is-expanded');
+                freshArrow?.classList.remove('is-rotated');
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWritingSection);
+    } else {
+        initWritingSection();
+    }
+    document.addEventListener('astro:page-load', initWritingSection);
+</script>
+
+<style>
+    .writing-section {
+        width: 100%;
+    }
+
+    .writing-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+    }
+
+    .writing-header:hover {
+        opacity: 0.75;
+    }
+
+    .writing-arrow {
+        flex-shrink: 0;
+        color: #9ca3af;
+        transition:
+            color 0.2s ease,
+            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .writing-arrow.is-rotated {
+        transform: rotate(180deg);
+    }
+
+    .writing-header:hover .writing-arrow {
+        color: #6b7280;
+    }
+
+    .header-text {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .count-pill {
+        font-size: 0.6875rem;
+        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 0.0625rem 0.4375rem;
+        border-radius: 999px;
+        line-height: 1.4;
+    }
+
+    .writing-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        padding-top: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+            grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.3s ease-out,
+            padding-top 0.3s ease;
+    }
+
+    .writing-content.is-expanded {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        padding-top: 1rem;
+    }
+
+    .writing-inner {
+        min-height: 0;
+    }
+
+    .empty {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-style: italic;
+    }
+
+    .post-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .post-link {
+        display: block;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.875rem 1.125rem;
+        background: #ffffff;
+        text-decoration: none;
+        color: inherit;
+        transition:
+            transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+            border-color 0.25s ease;
+    }
+
+    .post-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        border-color: #d1d5db;
+    }
+
+    .post-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .post-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .post-date {
+        font-size: 0.8125rem;
+        color: #9ca3af;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .post-desc {
+        font-size: 0.8125rem;
+        color: #4b5563;
+        line-height: 1.55;
+        margin: 0.375rem 0 0 0;
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3125rem;
+        margin-top: 0.5rem;
+    }
+
+    .tag {
+        font-size: 0.6875rem;
+        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 0.125rem 0.4375rem;
+        border-radius: 0.25rem;
+        letter-spacing: 0.01em;
+        line-height: 1.4;
+    }
+
+    :global(.dark) .header-text {
+        color: #f9fafb;
+    }
+
+    :global(.dark) .writing-arrow {
+        color: #6b7280;
+    }
+
+    :global(.dark) .writing-header:hover .writing-arrow {
+        color: #9ca3af;
+    }
+
+    :global(.dark) .post-link {
+        background: rgba(31, 41, 55, 0.5);
+        border-color: #374151;
+    }
+
+    :global(.dark) .post-link:hover {
+        border-color: #4b5563;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    :global(.dark) .post-title {
+        color: #f9fafb;
+    }
+
+    :global(.dark) .post-date {
+        color: #6b7280;
+    }
+
+    :global(.dark) .post-desc {
+        color: #d1d5db;
+    }
+
+    :global(.dark) .tag,
+    :global(.dark) .count-pill {
+        background: rgba(55, 65, 81, 0.5);
+        color: #9ca3af;
+    }
+</style>

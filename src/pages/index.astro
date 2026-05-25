@@ -3,14 +3,11 @@ import Layout from '../layouts/Layout.astro';
 // import Date from '../components/date.astro';
 import Signature from '../components/signature.astro';
 import ExperienceSection from '../components/ExperienceSection.astro';
+import WritingSection from '../components/WritingSection.astro';
 import DarkModeToggle from '../components/DarkModeToggle.astro';
 import { Image } from 'astro:assets';
-import signatureImg from '../assets/signature.png';
-import resumeImg from '../assets/resume.png';
 import githubIcon from '../assets/github.svg';
 import linkedinIcon from '../assets/linkedin.svg';
-// import amazonIcon from '../assets/amazon.svg';
-// import creativeLogo from '../assets/creativelogo2.png'
 import '../../global.css';
 ---
 
@@ -24,48 +21,48 @@ import '../../global.css';
             <!-- Layer 3: Signature -->
             <div class="flex items-center justify-center xl:col-span-1">
                 <div transition:name="signature">
-                    <Signature client:load />
-                    <!-- <Image src={creativeLogo} alt="Signature" class="w-auto object-contain" /> -->
+                    <Signature />
                 </div>
             </div>
 
             <!-- Layer 4: Content -->
             <div class="flex items-center justify-center xl:col-span-2">
                 <div class="text-lg text-gray-700 leading-relaxed">
-                    <!-- <hr class="my-4 border-t border-gray-300" /> -->
                     <p class="mb-4">
-                        <!-- <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow w-fit">
-              <Date /> 
-            </div> -->
-
                         Hi! I'm Simon. I'm a 4th-year student at the University of Washington
                         studying Informatics (Software Engineering) and Mathematics. This is my
                         personal website, it contains references to my social media, some contact
                         information, and blank space for the future.
                     </p>
 
-                    <!-- Expandable Experience & Projects Section -->
-                    <div class="mt-6 mb-6">
-                        <ExperienceSection client:load />
+                    <!-- Expandable Writing Section -->
+                    <div class="mt-6 mb-4">
+                        <WritingSection />
                     </div>
 
-                    <!-- <p class="text-2xl text-gray-700 leading-relaxed pt-4">
-          Positions and experience
-        </p>
+                    <!-- Expandable Experience & Projects Section -->
+                    <div class="mt-2 mb-6">
+                        <ExperienceSection />
+                    </div>
 
-        <div class="flex justify-between gap-4 mt-8">
-          <div class="text-3xl">
-            Jr Developer
-          </div>
-          <div>
-            <Image src={amazonIcon} alt="amazon logo" class="w-24" />
-          </div>
-        </div> -->
+                    <hr class="my-6 border-t border-gray-300 dock-divider" />
 
-                    <hr class="my-4 border-t border-gray-300" />
+                    <!-- In-flow placeholder. Hidden when the dock is at rest;
+                         when the dock floats (position: fixed), this reserves the
+                         space at the natural position so we can measure whether
+                         the dock would otherwise be pushed off-screen. -->
+                    <div
+                        id="dock-placeholder"
+                        class="dock-placeholder"
+                        aria-hidden="true"
+                    >
+                    </div>
 
-                    <div class="flex flex-col gap-4 mt-8">
-                        <div class="flex gap-4 items-center">
+                    <!-- Socials dock: static at bottom of content when collapsed,
+                         lifts off to fixed-bottom of viewport once the natural
+                         dock position falls below the viewport -->
+                    <div id="socials-dock" class="socials-dock">
+                        <div class="dock-inner">
                             <a
                                 href="https://github.com/simku22"
                                 target="_blank"
@@ -86,22 +83,7 @@ import '../../global.css';
                                     class="w-6 h-6 dark-icon"
                                 />
                             </a>
-                            <!-- Resume link commented out for now
-                            <a
-                                href="https://drive.google.com/file/d/1KJ8O8AXgGL2ie6_tQ8Z-Wr51WwV4r_G6/view?usp=sharing"
-                                target="_blank"
-                                class="hover:opacity-80 w-6 transition-opacity"
-                            >
-                                <Image
-                                    src={resumeImg}
-                                    alt="Resume Icon"
-                                    class="w-7 object-contain dark-icon"
-                                />
-                            </a>
-                            -->
-                            <div
-                                class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow w-fit"
-                            >
+                            <div class="email-pill">
                                 <p class="text-xs font-mono text-gray-800">simku22 [at] uw.edu</p>
                             </div>
                             <DarkModeToggle />
@@ -112,6 +94,118 @@ import '../../global.css';
         </div>
     </div>
 
+    <script is:inline>
+        (function () {
+            const BUFFER_PX = 4;
+
+            function shouldLift() {
+                const dock = document.getElementById('socials-dock');
+                const placeholder = document.getElementById('dock-placeholder');
+                if (!dock) return false;
+                const lifted = document.body.classList.contains('dock-lifted');
+                // When lifted, the dock is out of flow — measure the placeholder
+                // (which reserves the natural slot) instead.
+                const ref = lifted && placeholder ? placeholder : dock;
+                const rect = ref.getBoundingClientRect();
+                return rect.bottom > window.innerHeight - BUFFER_PX;
+            }
+
+            function liftDock() {
+                const dock = document.getElementById('socials-dock');
+                const placeholder = document.getElementById('dock-placeholder');
+                if (!dock) return;
+                if (document.body.classList.contains('dock-lifted')) return;
+                if (dock.classList.contains('dock-departing')) return;
+
+                // Snapshot the in-flow height into the placeholder so the
+                // layout doesn't shift when the dock leaves the flow.
+                if (placeholder) {
+                    placeholder.style.height = dock.offsetHeight + 'px';
+                }
+
+                // Mirror the close pattern: fade out at the natural slot, swap
+                // classes while the dock is invisible, fade in at the floating
+                // position. No teleport jump.
+                dock.classList.remove('dock-settling', 'dock-arriving');
+                dock.classList.add('dock-departing');
+
+                setTimeout(() => {
+                    dock.classList.remove('dock-departing');
+                    // If the user closed mid-depart and the dock no longer
+                    // needs to lift, fade it back in at the natural slot.
+                    if (shouldLift()) {
+                        document.body.classList.add('dock-lifted');
+                        // dock-rise runs from `body.dock-lifted .socials-dock`
+                    } else {
+                        void dock.offsetWidth;
+                        dock.classList.add('dock-arriving');
+                        const finishArrive = () => {
+                            dock.classList.remove('dock-arriving');
+                        };
+                        dock.addEventListener('animationend', finishArrive, {
+                            once: true,
+                        });
+                        setTimeout(finishArrive, 500);
+                    }
+                }, 180);
+            }
+
+            function settleDock() {
+                const dock = document.getElementById('socials-dock');
+                if (!dock) return;
+                if (!document.body.classList.contains('dock-lifted')) return;
+
+                // 1) Fade the floating dock out, holding invisible while the
+                //    Experience section finishes collapsing.
+                // 2) Drop dock-lifted (fixed → static) while the dock is fully
+                //    transparent.
+                // 3) Play dock-arriving to roll it back in at its natural slot.
+                dock.classList.remove('dock-arriving');
+                dock.classList.add('dock-settling');
+
+                const finishSettle = () => {
+                    dock.classList.remove('dock-settling');
+                    document.body.classList.remove('dock-lifted');
+                    // Force reflow so the next animation runs
+                    void dock.offsetWidth;
+                    dock.classList.add('dock-arriving');
+                    const finishArrive = () => {
+                        dock.classList.remove('dock-arriving');
+                    };
+                    dock.addEventListener('animationend', finishArrive, {
+                        once: true,
+                    });
+                    setTimeout(finishArrive, 500);
+                };
+
+                // ~270ms: dock-fall (180ms) + brief hold so the layout swap
+                // happens while the dock is fully transparent. Anything much
+                // longer feels sluggish.
+                setTimeout(finishSettle, 270);
+            }
+
+            function syncDock() {
+                if (shouldLift()) liftDock();
+                else settleDock();
+            }
+
+            // Toggle clicks change content height. Re-check immediately (to
+            // catch growing past the fold) and again after the section's own
+            // ~0.35s grid transition completes.
+            document.addEventListener('click', function (ev) {
+                const t = ev.target;
+                if (t && t.closest && t.closest('#writing-toggle, #experience-toggle')) {
+                    setTimeout(syncDock, 50);
+                    setTimeout(syncDock, 400);
+                }
+            });
+
+            window.addEventListener('resize', syncDock);
+            document.addEventListener('astro:page-load', syncDock);
+            syncDock();
+        })();
+    </script>
+
     <style>
         /* Dark mode - invert icons to white */
         :global(.dark) .dark-icon {
@@ -121,6 +215,182 @@ import '../../global.css';
 
         .dark-icon {
             transition: filter 0.3s ease;
+        }
+
+        /* ── Socials dock ── */
+        .socials-dock {
+            /* No transition here on purpose — class-add/remove for `dock-lifted`
+               toggles position:fixed ↔ static, which can't be interpolated. We
+               drive enter/exit via discrete keyframe animations instead. */
+        }
+
+        /* Hidden in-flow placeholder. Only takes up space (reserved by JS) when
+           the dock is floating; otherwise contributes nothing to the layout. */
+        .dock-placeholder {
+            display: none;
+        }
+
+        :global(body.dock-lifted) .dock-placeholder {
+            display: block;
+            visibility: hidden;
+        }
+
+        :global(body.dock-lifted) .dock-divider {
+            /* Keep the divider visible — only the dock leaves flow */
+        }
+
+        .dock-inner {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .email-pill {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.2s ease;
+            width: fit-content;
+        }
+
+        .email-pill:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── Liftoff: detach to floating dock at the bottom of the viewport ── */
+        :global(body.dock-lifted) .socials-dock {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 1rem;
+            margin-inline: auto;
+            width: max-content;
+            max-width: calc(100vw - 1.5rem);
+            z-index: 50;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            border: 1px solid rgba(229, 231, 235, 0.9);
+            border-radius: 0.5rem;
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.04),
+                0 10px 30px rgba(0, 0, 0, 0.12);
+            animation: dock-rise 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Exit (close) and depart (open) animations share dock-fall: fade out
+           + drop slightly at the natural slot. `forwards` keeps the dock
+           invisible past the animation so the position swap underneath is
+           never seen. */
+        .socials-dock.dock-settling,
+        .socials-dock.dock-departing {
+            animation: dock-fall 0.18s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes dock-fall {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(0.5rem);
+                opacity: 0;
+            }
+        }
+
+        /* Re-entry: roll the dock back in at the natural slot. Starts from the
+           same translate/opacity that dock-fall ended on, so the position
+           change underneath is hidden. */
+        .socials-dock.dock-arriving {
+            animation: dock-arrive 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes dock-arrive {
+            from {
+                transform: translateY(0.5rem);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        :global(body.dock-lifted) .socials-dock .dock-inner {
+            flex-wrap: nowrap;
+            gap: 0.75rem;
+        }
+
+        /* Inside the floating dock, drop the inner email-pill's own chrome so it
+           reads as a single unified pill */
+        :global(body.dock-lifted) .socials-dock .email-pill {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0.25rem 0.5rem;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        /* Keep page content from sliding under the floating dock */
+        :global(body.dock-lifted) {
+            padding-bottom: 5rem;
+        }
+
+        @keyframes dock-rise {
+            from {
+                transform: translateY(0.75rem);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 640px) {
+            :global(body.dock-lifted) .socials-dock {
+                left: 0.75rem;
+                right: 0.75rem;
+                bottom: 0.75rem;
+                margin-inline: 0;
+                width: auto;
+                max-width: calc(100vw - 1.5rem);
+            }
+            :global(body.dock-lifted) .socials-dock .dock-inner {
+                justify-content: center;
+            }
+        }
+
+        /* Dark mode dock */
+        :global(.dark.dark) :global(body.dock-lifted) .socials-dock,
+        :global(.dark) :global(body.dock-lifted) .socials-dock {
+            background: rgba(31, 41, 55, 0.78);
+            border-color: rgba(75, 85, 99, 0.7);
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.2),
+                0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        :global(.dark) .email-pill {
+            background: rgba(31, 41, 55, 0.8) !important;
+            border-color: rgb(75, 85, 99);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            :global(body.dock-lifted) .socials-dock {
+                animation: none;
+            }
+            .socials-dock {
+                transition: none;
+            }
         }
     </style>
 </Layout>
