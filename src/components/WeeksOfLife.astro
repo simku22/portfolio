@@ -15,20 +15,59 @@
 <figure class="weeks-fig">
     <div class="weeks-fig-header">
         <span class="weeks-fig-label">Figure 1 · Weeks of my life</span>
-        <span class="weeks-fig-legend">
-            <span class="legend-item"
-                ><span class="swatch swatch-past" aria-hidden="true"></span>past</span
+        <span class="weeks-fig-actions">
+            <span class="weeks-fig-legend" data-legend-default>
+                <span class="legend-item"
+                    ><span class="swatch swatch-past" aria-hidden="true"></span>past</span
+                >
+                <span class="legend-item"
+                    ><span class="swatch swatch-now" aria-hidden="true"></span>this week</span
+                >
+                <span class="legend-item"
+                    ><span class="swatch swatch-future" aria-hidden="true"></span>ahead</span
+                >
+            </span>
+            <span class="weeks-fig-legend weeks-fig-legend-gh" data-legend-gh aria-hidden="true">
+                <span class="legend-item legend-gh-ramp" aria-label="less to more contributions">
+                    less
+                    <span class="gh-ramp">
+                        <span class="gh-ramp-step" data-level="0"></span>
+                        <span class="gh-ramp-step" data-level="1"></span>
+                        <span class="gh-ramp-step" data-level="2"></span>
+                        <span class="gh-ramp-step" data-level="3"></span>
+                        <span class="gh-ramp-step" data-level="4"></span>
+                    </span>
+                    more
+                </span>
+                <span class="legend-item"
+                    ><span class="swatch swatch-now" aria-hidden="true"></span>this week</span
+                >
+            </span>
+            <button
+                class="weeks-gh-toggle"
+                type="button"
+                aria-pressed="false"
+                data-gh-toggle
+                title="Overlay my GitHub contributions on this grid"
             >
-            <span class="legend-item"
-                ><span class="swatch swatch-now" aria-hidden="true"></span>this week</span
-            >
-            <span class="legend-item"
-                ><span class="swatch swatch-future" aria-hidden="true"></span>ahead</span
-            >
+                <svg class="weeks-gh-icon" viewBox="0 0 16 16" aria-hidden="true">
+                    <path
+                        fill="currentColor"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                    ></path>
+                </svg>
+                <span class="weeks-gh-label">github</span>
+            </button>
         </span>
     </div>
 
-    <div class="weeks-host" data-weeks data-birth="2004-04-29" data-years="77">
+    <div
+        class="weeks-host"
+        data-weeks
+        data-birth="2004-04-29"
+        data-years="77"
+        data-gh-user="simku22"
+    >
         <svg
             class="weeks-svg"
             xmlns="http://www.w3.org/2000/svg"
@@ -143,6 +182,169 @@
             const tag = child.tagName.toLowerCase();
             if (tag === 'title' || tag === 'desc') return;
             child.remove();
+        });
+    }
+
+    // ── GitHub contribution overlay ────────────────────────────────
+    // Per-host cache: avoids refetching when the user toggles on/off or the
+    // grid is re-drawn (resize, view transition).
+    const contribsCache = new WeakMap<HTMLElement, Map<string, number>>();
+
+    function formatISO(d: Date): string {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    // Bucket weekly contribution totals into five levels. Tuned for daily-data
+    // summed over 7 days: roughly "a handful", "a week of work", "heavy", "rip".
+    function levelFor(count: number): number {
+        if (count <= 0) return 0;
+        if (count <= 7) return 1;
+        if (count <= 20) return 2;
+        if (count <= 49) return 3;
+        return 4;
+    }
+
+    type ProbeResp = {
+        total?: Record<string, number>;
+        contributions?: Array<{ date: string; count: number }>;
+    };
+
+    // Pull all years jogruber's v4 API knows about for this user. The probe
+    // (no `y=` param) returns the current year's daily series PLUS a `total`
+    // map keyed by every year the user has contributions in. We then fan out
+    // to grab the other years in parallel.
+    async function loadAllContribs(user: string): Promise<Map<string, number>> {
+        const base = `https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(user)}`;
+        const probe = (await fetch(base).then((r) => {
+            if (!r.ok) throw new Error(`probe ${r.status}`);
+            return r.json();
+        })) as ProbeResp;
+
+        const map = new Map<string, number>();
+        for (const c of probe.contributions || []) map.set(c.date, c.count);
+
+        const years = Object.keys(probe.total || {})
+            .map((s) => parseInt(s, 10))
+            .filter((y) => !isNaN(y))
+            .sort();
+        const probeYear = probe.contributions?.[0]?.date?.slice(0, 4) ?? '';
+        const remaining = years.filter((y) => String(y) !== probeYear);
+
+        if (remaining.length > 0) {
+            const results = await Promise.all(
+                remaining.map((y) =>
+                    fetch(`${base}?y=${y}`)
+                        .then((r) => (r.ok ? (r.json() as Promise<ProbeResp>) : null))
+                        .catch(() => null)
+                )
+            );
+            for (const r of results) {
+                if (!r) continue;
+                for (const c of r.contributions || []) map.set(c.date, c.count);
+            }
+        }
+
+        return map;
+    }
+
+    // Anchor each cell to a real calendar week by re-applying the birthday
+    // shift per age-year. Doing `birth + idx*7 days` would drift by ~1.25
+    // days per year (52 weeks = 364 days, not 365.25), so by age 22 the
+    // "now" cell would be looking up contributions from ~a month ago.
+    function cellStartDate(birth: Date, age: number, weekOfAge: number): Date {
+        const startOfAge = new Date(
+            birth.getFullYear() + age,
+            birth.getMonth(),
+            birth.getDate()
+        );
+        return new Date(startOfAge.getTime() + weekOfAge * 7 * 86400000);
+    }
+
+    // Walk every past cell AND the now-cell in the SVG, sum the 7 days
+    // starting at that life-week's actual calendar start, and stamp
+    // data-level + data-contribs. The now-cell only contributes a partial
+    // week so far, but the tooltip's contribs row should still reflect what
+    // has been logged. The .now cell's fill is unaffected — CSS only targets
+    // .past[data-level].
+    function applyContribLevels(
+        host: HTMLElement,
+        birth: Date,
+        contribs: Map<string, number>
+    ): void {
+        const cells = host.querySelectorAll<SVGRectElement>(
+            '.weeks-cell.past, .weeks-cell.now'
+        );
+        const todayIso = formatISO(new Date());
+        for (const cell of cells) {
+            const age = parseInt(cell.getAttribute('data-age') || '0', 10);
+            const weekOfAge = parseInt(cell.getAttribute('data-week') || '0', 10);
+            const weekStart = cellStartDate(birth, age, weekOfAge);
+            let count = 0;
+            let hasAny = false;
+            for (let d = 0; d < 7; d++) {
+                const day = new Date(weekStart.getTime() + d * 86400000);
+                const iso = formatISO(day);
+                // Don't count days in the future for the in-progress current
+                // week — they exist in the API as 0 but we shouldn't claim
+                // coverage for them.
+                if (iso > todayIso) break;
+                if (contribs.has(iso)) {
+                    count += contribs.get(iso) as number;
+                    hasAny = true;
+                }
+            }
+            if (hasAny) {
+                cell.setAttribute('data-level', String(levelFor(count)));
+                cell.setAttribute('data-contribs', String(count));
+            }
+        }
+    }
+
+    function bindGhToggle(host: HTMLElement): void {
+        const figure = host.closest('.weeks-fig');
+        if (!figure) return;
+        const btn = figure.querySelector<HTMLButtonElement>('[data-gh-toggle]');
+        if (!btn || btn.dataset.bound === '1') return;
+        btn.dataset.bound = '1';
+
+        btn.addEventListener('click', async () => {
+            if (btn.classList.contains('is-loading')) return;
+            const pressed = btn.getAttribute('aria-pressed') === 'true';
+
+            if (pressed) {
+                btn.setAttribute('aria-pressed', 'false');
+                host.classList.remove('show-contribs');
+                return;
+            }
+
+            // First press: lazy-fetch (or use cached data).
+            if (!contribsCache.has(host)) {
+                btn.classList.remove('is-error');
+                btn.classList.add('is-loading');
+                btn.setAttribute('aria-busy', 'true');
+                try {
+                    const user = host.dataset.ghUser || 'simku22';
+                    const data = await loadAllContribs(user);
+                    contribsCache.set(host, data);
+                } catch (err) {
+                    console.warn('weeks: github contributions fetch failed', err);
+                    btn.classList.remove('is-loading');
+                    btn.classList.add('is-error');
+                    btn.removeAttribute('aria-busy');
+                    btn.title = "Couldn't load GitHub contributions";
+                    return;
+                }
+                btn.classList.remove('is-loading');
+                btn.removeAttribute('aria-busy');
+            }
+
+            const birth = parseBirth(host.dataset.birth || '2004-04-29');
+            applyContribLevels(host, birth, contribsCache.get(host) as Map<string, number>);
+            btn.setAttribute('aria-pressed', 'true');
+            host.classList.add('show-contribs');
         });
     }
 
@@ -308,6 +510,13 @@
         axisGroup.appendChild(yTitle);
         svg.appendChild(axisGroup);
 
+        // Re-apply GitHub contribution levels if the user has already loaded
+        // them (e.g. on resize or view-transition re-render).
+        const cachedContribs = contribsCache.get(host);
+        if (cachedContribs) {
+            applyContribLevels(host, birth, cachedContribs);
+        }
+
         // ── Now-ring overlay (drawn on top so neighbours can't clip it) ──
         if (nowRect) {
             const x = parseFloat(nowRect.getAttribute('x')!);
@@ -347,10 +556,17 @@
             tooltip.style.left = `${tx}px`;
             tooltip.style.top = `${ty}px`;
             tooltip.style.opacity = '1';
+            const ghOn = host.classList.contains('show-contribs');
+            const contribAttr = target.getAttribute('data-contribs');
+            const contribRow =
+                ghOn && contribAttr !== null
+                    ? `<div class="tt-row"><span class="tt-key">contribs</span><span class="tt-val">${contribAttr}</span></div>`
+                    : '';
             tooltip.innerHTML = `
                 <div class="tt-row"><span class="tt-key">age</span><span class="tt-val">${age}</span></div>
                 <div class="tt-row"><span class="tt-key">year</span><span class="tt-val">${calYear}</span></div>
                 <div class="tt-row"><span class="tt-key">week</span><span class="tt-val">${wk + 1}</span></div>
+                ${contribRow}
             `;
         };
         const onLeave = () => {
@@ -381,6 +597,7 @@
                 ro.observe(host);
                 observers.set(host, ro);
             }
+            bindGhToggle(host);
         });
     }
 
