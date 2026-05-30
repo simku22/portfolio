@@ -1,0 +1,117 @@
+---
+// Floodgates — a small looping (~3s) line-art animation for the "opening the
+// floodgates floods" point: a canal gate swings open and a reservoir of ideas
+// (dots) pours through and fans out thin. Matches the IdeaPaths diagram style;
+// theme-aware; respects reduced-motion.
+---
+
+<figure class="polsia-fig fg-fig" aria-hidden="true">
+    <svg class="fg-svg" viewBox="0 0 240 130" role="img" aria-label="Floodgates opening as ideas pour through and spread thin">
+        <!-- channel walls -->
+        <line class="fg-wall" x1="8" y1="34" x2="232" y2="34" />
+        <line class="fg-wall" x1="8" y1="98" x2="232" y2="98" />
+
+        <!-- ideas pouring through (each fans to a different --fy, staggered by --d) -->
+        <g class="fg-dots">
+            <circle class="fg-dot" cx="36" cy="52" r="3" style="--fy:-26px;--d:0s" />
+            <circle class="fg-dot" cx="52" cy="44" r="3" style="--fy:-14px;--d:0.05s" />
+            <circle class="fg-dot" cx="44" cy="68" r="3" style="--fy:18px;--d:0.1s" />
+            <circle class="fg-dot" cx="60" cy="60" r="3" style="--fy:4px;--d:0.08s" />
+            <circle class="fg-dot" cx="72" cy="50" r="3" style="--fy:-30px;--d:0.16s" />
+            <circle class="fg-dot" cx="82" cy="66" r="3" style="--fy:26px;--d:0.12s" />
+            <circle class="fg-dot" cx="50" cy="82" r="3" style="--fy:12px;--d:0.2s" />
+            <circle class="fg-dot" cx="66" cy="76" r="3" style="--fy:-18px;--d:0.18s" />
+            <circle class="fg-dot" cx="90" cy="56" r="3" style="--fy:-6px;--d:0.24s" />
+            <circle class="fg-dot" cx="78" cy="84" r="3" style="--fy:30px;--d:0.26s" />
+            <circle class="fg-dot" cx="40" cy="60" r="3" style="--fy:8px;--d:0.3s" />
+            <circle class="fg-dot" cx="88" cy="72" r="3" style="--fy:-12px;--d:0.15s" />
+        </g>
+
+        <!-- the gate leaf, hinged at its base, swings open and shut -->
+        <line class="fg-gate" x1="112" y1="36" x2="112" y2="96" />
+    </svg>
+</figure>
+
+<style>
+    .fg-fig {
+        margin: 1.25rem auto 1.5rem;
+        max-width: 260px;
+        text-align: center;
+    }
+
+    .fg-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        overflow: visible;
+    }
+
+    .fg-wall {
+        stroke: var(--polsia-fg-faint);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+    }
+
+    .fg-gate {
+        stroke: var(--polsia-fg-muted);
+        stroke-width: 3;
+        stroke-linecap: round;
+        transform-box: view-box;
+        transform-origin: 112px 96px;
+        animation: fg-gate 3s ease-in-out infinite;
+    }
+
+    .fg-dot {
+        fill: var(--polsia-accent);
+        opacity: 0;
+        animation: fg-flow 3s ease-in infinite;
+        animation-delay: var(--d, 0s);
+    }
+
+    @keyframes fg-gate {
+        0%,
+        12% {
+            transform: rotate(0deg);
+        }
+        26%,
+        80% {
+            transform: rotate(-80deg);
+        }
+        92%,
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    @keyframes fg-flow {
+        0%,
+        14% {
+            transform: translate(0, 0);
+            opacity: 0;
+        }
+        22% {
+            opacity: 1;
+        }
+        72% {
+            transform: translate(150px, var(--fy));
+            opacity: 0.9;
+        }
+        88%,
+        100% {
+            transform: translate(166px, var(--fy));
+            opacity: 0;
+        }
+    }
+
+    /* Hold a calm, static "reservoir behind a closed gate" frame if the reader
+       prefers reduced motion. */
+    @media (prefers-reduced-motion: reduce) {
+        .fg-gate,
+        .fg-dot {
+            animation: none;
+        }
+        .fg-dot {
+            opacity: 0.85;
+        }
+    }
+</style>

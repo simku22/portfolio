@@ -197,6 +197,21 @@
     font-size: 0.85em;
 }
 
+/* ── Centered pull-quote ── */
+.polsia-quote {
+    max-width: 600px;
+    margin: 1.75rem auto;
+    padding: 0.9rem 1.25rem;
+    border: none;
+    border-top: 1px solid var(--polsia-border);
+    border-bottom: 1px solid var(--polsia-border);
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--polsia-fg-alt);
+}
+
 /* ── Furthest-outlier table ── */
 .polsia-table {
     width: 100%;
