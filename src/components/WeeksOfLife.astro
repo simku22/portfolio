@@ -1,0 +1,389 @@
+---
+// WeeksOfLife.astro
+//
+// A 77×52 grid of week-cells, one per week of a roughly 77-year life.
+// Rendered as vanilla SVG so the "now" cell is recomputed live whenever the
+// page loads — no build-time staleness and no d3 dependency. The grid is
+// painted in three passes: cells (filled past/future, transparent for now),
+// axis/decade scaffolding, then a single ring overlay on top of the now cell
+// so its stroke isn't clipped by the neighbouring rects.
+//
+// Birth date is passed via data-birth so this component is reusable for
+// anyone who wants their own grid; defaults to mine (April 29, 2004).
+---
+
+<figure class="weeks-fig">
+    <div class="weeks-fig-header">
+        <span class="weeks-fig-label">Figure 1 · Weeks of my life</span>
+        <span class="weeks-fig-legend">
+            <span class="legend-item"
+                ><span class="swatch swatch-past" aria-hidden="true"></span>past</span
+            >
+            <span class="legend-item"
+                ><span class="swatch swatch-now" aria-hidden="true"></span>this week</span
+            >
+            <span class="legend-item"
+                ><span class="swatch swatch-future" aria-hidden="true"></span>ahead</span
+            >
+        </span>
+    </div>
+
+    <div class="weeks-host" data-weeks data-birth="2004-04-29" data-years="77">
+        <svg
+            class="weeks-svg"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-labelledby="weeks-title weeks-desc"
+        >
+            <title id="weeks-title">Weeks of my life</title>
+            <desc id="weeks-desc"
+                >A grid of weeks of an estimated 77-year life, one cell per week. The
+                live "now" cell and exact counts are filled in by the page script.</desc
+            >
+        </svg>
+        <div class="weeks-tooltip" role="status" aria-live="polite"></div>
+    </div>
+
+    <figcaption class="weeks-fig-caption">
+        <span class="fig-num">Figure 1.</span>
+        Each cell is one week of an estimated 77-year life. The ringed cell is the week I'm in
+        right now — I was born April 29, 2004. The light cells haven't happened yet.
+    </figcaption>
+</figure>
+
+<script>
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const WEEKS_PER_YEAR = 52;
+    const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    type LiveCells = {
+        ageYears: number;
+        weeksIntoAge: number;
+        idxNow: number;
+    };
+
+    function parseBirth(iso: string): Date {
+        // Construct in local time so getDate/getMonth round-trip cleanly.
+        // Using `new Date(iso)` would parse as UTC and shift by the local
+        // offset for negative-UTC timezones.
+        const [y, m, d] = iso.split('-').map((s) => parseInt(s, 10));
+        return new Date(y, m - 1, d);
+    }
+
+    function liveCells(birth: Date, now: Date): LiveCells {
+        // ageYears = whole years since birth in local time.
+        let ageYears = now.getFullYear() - birth.getFullYear();
+        const thisYearsBirthday = new Date(
+            now.getFullYear(),
+            birth.getMonth(),
+            birth.getDate()
+        );
+        let lastBirthday: Date;
+        if (now.getTime() < thisYearsBirthday.getTime()) {
+            ageYears -= 1;
+            lastBirthday = new Date(
+                now.getFullYear() - 1,
+                birth.getMonth(),
+                birth.getDate()
+            );
+        } else {
+            lastBirthday = thisYearsBirthday;
+        }
+        // Clamp to 51 so the now-marker can't fall on a non-existent 53rd
+        // column of the 52-week grid (the real calendar carries 52 weeks +
+        // ~1 day per year; the extra day eventually accumulates an extra
+        // week, which we silently swallow).
+        const weeksIntoAge = Math.min(
+            WEEKS_PER_YEAR - 1,
+            Math.floor((now.getTime() - lastBirthday.getTime()) / MS_PER_WEEK)
+        );
+        const idxNow = ageYears * WEEKS_PER_YEAR + weeksIntoAge;
+        return { ageYears, weeksIntoAge, idxNow };
+    }
+
+    // Return the actual calendar year for the (age, weekOfAge) tooltip cell —
+    // shifts mid-age-year so the value still reads sensibly when the cell
+    // crosses Jan 1.
+    function calendarYearFor(birth: Date, age: number, week: number): number {
+        const startOfAge = new Date(
+            birth.getFullYear() + age,
+            birth.getMonth(),
+            birth.getDate()
+        );
+        return new Date(startOfAge.getTime() + week * 7 * MS_PER_DAY).getFullYear();
+    }
+
+    function setAttrs(el: Element, attrs: Record<string, string | number>): void {
+        for (const [k, v] of Object.entries(attrs)) {
+            el.setAttribute(k, String(v));
+        }
+    }
+
+    function makeRect(attrs: Record<string, string | number>): SVGRectElement {
+        const r = document.createElementNS(SVG_NS, 'rect');
+        setAttrs(r, attrs);
+        return r;
+    }
+
+    function makeText(
+        attrs: Record<string, string | number>,
+        text: string
+    ): SVGTextElement {
+        const t = document.createElementNS(SVG_NS, 'text');
+        setAttrs(t, attrs);
+        t.textContent = text;
+        return t;
+    }
+
+    function clear(node: Element): void {
+        // Preserve <title> and <desc> so the SVG's accessible name survives
+        // re-draws; everything else (cells, axis, ring) is rebuilt each tick.
+        Array.from(node.children).forEach((child) => {
+            const tag = child.tagName.toLowerCase();
+            if (tag === 'title' || tag === 'desc') return;
+            child.remove();
+        });
+    }
+
+    function describeLive(
+        svg: SVGSVGElement,
+        ageYears: number,
+        weeksIntoAge: number,
+        pastCount: number,
+        futureCount: number,
+        total: number
+    ): void {
+        const desc = svg.querySelector('desc');
+        if (!desc) return;
+        // Numeric formatting with thousands separator for readability.
+        const fmt = (n: number) => n.toLocaleString('en-US');
+        desc.textContent =
+            `Each cell is one week of an estimated ${fmt(total / 52)}-year life. ` +
+            `I'm currently ${ageYears} years old, week ${weeksIntoAge + 1} of the year. ` +
+            `${fmt(pastCount)} weeks lived, ${fmt(futureCount)} ahead — ` +
+            `${fmt(total)} total.`;
+    }
+
+    function draw(host: HTMLElement): void {
+        const svg = host.querySelector<SVGSVGElement>('.weeks-svg');
+        const tooltip = host.querySelector<HTMLDivElement>('.weeks-tooltip');
+        if (!svg || !tooltip) return;
+
+        const birth = parseBirth(host.dataset.birth || '2004-04-29');
+        const years = parseInt(host.dataset.years || '77', 10);
+        const now = new Date();
+        const { ageYears, weeksIntoAge, idxNow } = liveCells(birth, now);
+        const totalCells = years * WEEKS_PER_YEAR;
+        describeLive(svg, ageYears, weeksIntoAge, idxNow, totalCells - idxNow - 1, totalCells);
+
+        // Layout: leave room for y-axis labels on the left, x-axis labels on
+        // the top, and an axis title underneath.
+        const W = host.clientWidth || 600;
+        const padL = 30;
+        const padR = 6;
+        const padT = 18;
+        const padB = 22;
+        const gap = 2;
+        const innerW = Math.max(0, W - padL - padR);
+        const cell = Math.max(2, (innerW - (WEEKS_PER_YEAR - 1) * gap) / WEEKS_PER_YEAR);
+        const gridH = years * cell + (years - 1) * gap;
+        const H = gridH + padT + padB;
+
+        setAttrs(svg, {
+            width: W,
+            height: H,
+            viewBox: `0 0 ${W} ${H}`,
+        });
+        clear(svg);
+
+        // ── Cells ────────────────────────────────────────────────────
+        const cellGroup = document.createElementNS(SVG_NS, 'g');
+        cellGroup.setAttribute('class', 'weeks-cells');
+        let nowRect: SVGRectElement | null = null;
+        for (let age = 0; age < years; age++) {
+            for (let w = 0; w < WEEKS_PER_YEAR; w++) {
+                const idx = age * WEEKS_PER_YEAR + w;
+                const x = padL + w * (cell + gap);
+                const y = padT + age * (cell + gap);
+                const cls =
+                    idx === idxNow
+                        ? 'weeks-cell now'
+                        : idx < idxNow
+                          ? 'weeks-cell past'
+                          : 'weeks-cell future';
+                const rect = makeRect({
+                    x,
+                    y,
+                    width: cell,
+                    height: cell,
+                    class: cls,
+                    'data-idx': idx,
+                    'data-age': age,
+                    'data-week': w,
+                });
+                if (idx === idxNow) nowRect = rect;
+                cellGroup.appendChild(rect);
+            }
+        }
+        svg.appendChild(cellGroup);
+
+        // ── Decade lines + age labels ──────────────────────────────
+        const axisGroup = document.createElementNS(SVG_NS, 'g');
+        axisGroup.setAttribute('class', 'weeks-axis');
+        for (let d = 0; d <= years; d += 10) {
+            // Skip the divider line at 0 and at years (the grid edges); keep
+            // labels on every decade including 0.
+            if (d > 0 && d < years) {
+                const ly = padT + d * (cell + gap) - gap / 2;
+                const line = document.createElementNS(SVG_NS, 'line');
+                setAttrs(line, {
+                    x1: padL,
+                    y1: ly,
+                    x2: padL + innerW,
+                    y2: ly,
+                    class: 'weeks-decade-line',
+                });
+                axisGroup.appendChild(line);
+            }
+            axisGroup.appendChild(
+                makeText(
+                    {
+                        x: padL - 6,
+                        y: padT + d * (cell + gap) + cell * 0.7,
+                        class: 'weeks-axis-text',
+                        'text-anchor': 'end',
+                    },
+                    String(d)
+                )
+            );
+        }
+
+        // ── Month labels along the top ─────────────────────────────
+        const months = [
+            { w: 0, t: 'jan' },
+            { w: 13, t: 'apr' },
+            { w: 26, t: 'jul' },
+            { w: 39, t: 'oct' },
+            { w: 51, t: 'dec' },
+        ];
+        for (const m of months) {
+            axisGroup.appendChild(
+                makeText(
+                    {
+                        x: padL + m.w * (cell + gap) + cell / 2,
+                        y: padT - 5,
+                        class: 'weeks-axis-text',
+                        'text-anchor': 'middle',
+                    },
+                    m.t
+                )
+            );
+        }
+
+        // ── Axis titles ────────────────────────────────────────────
+        axisGroup.appendChild(
+            makeText(
+                {
+                    x: padL + innerW / 2,
+                    y: H - 5,
+                    class: 'weeks-axis-title',
+                    'text-anchor': 'middle',
+                },
+                'week of year'
+            )
+        );
+        const yTitleX = 10;
+        const yTitleY = padT + gridH / 2;
+        const yTitle = makeText(
+            {
+                x: yTitleX,
+                y: yTitleY,
+                class: 'weeks-axis-title',
+                'text-anchor': 'middle',
+                transform: `rotate(-90 ${yTitleX} ${yTitleY})`,
+            },
+            'age'
+        );
+        axisGroup.appendChild(yTitle);
+        svg.appendChild(axisGroup);
+
+        // ── Now-ring overlay (drawn on top so neighbours can't clip it) ──
+        if (nowRect) {
+            const x = parseFloat(nowRect.getAttribute('x')!);
+            const y = parseFloat(nowRect.getAttribute('y')!);
+            const inset = 0.75;
+            const ring = makeRect({
+                x: x + inset,
+                y: y + inset,
+                width: cell - 2 * inset,
+                height: cell - 2 * inset,
+                class: 'weeks-now-ring',
+            });
+            svg.appendChild(ring);
+        }
+
+        // ── Hover (delegated; tooltip lives inside the host) ──────
+        const TT_W_FALLBACK = 116;
+        const onMove = (e: MouseEvent) => {
+            const target = e.target as Element;
+            const idxAttr = target.getAttribute?.('data-idx');
+            if (idxAttr === null || idxAttr === undefined) {
+                tooltip.style.opacity = '0';
+                return;
+            }
+            const age = parseInt(target.getAttribute('data-age') || '0', 10);
+            const wk = parseInt(target.getAttribute('data-week') || '0', 10);
+            const calYear = calendarYearFor(birth, age, wk);
+
+            const rect = host.getBoundingClientRect();
+            const ttW = tooltip.offsetWidth || TT_W_FALLBACK;
+            const ttH = tooltip.offsetHeight || 56;
+            const rawX = e.clientX - rect.left + 14;
+            const rawY = e.clientY - rect.top + 14;
+            const tx = Math.max(0, Math.min(rawX, host.clientWidth - ttW - 4));
+            const ty = Math.max(0, Math.min(rawY, host.clientHeight - ttH - 4));
+
+            tooltip.style.left = `${tx}px`;
+            tooltip.style.top = `${ty}px`;
+            tooltip.style.opacity = '1';
+            tooltip.innerHTML = `
+                <div class="tt-row"><span class="tt-key">age</span><span class="tt-val">${age}</span></div>
+                <div class="tt-row"><span class="tt-key">year</span><span class="tt-val">${calYear}</span></div>
+                <div class="tt-row"><span class="tt-key">week</span><span class="tt-val">${wk + 1}</span></div>
+            `;
+        };
+        const onLeave = () => {
+            tooltip.style.opacity = '0';
+        };
+
+        // Replace previous listeners (boot can re-fire on view transitions).
+        svg.onmousemove = onMove;
+        svg.onmouseleave = onLeave;
+    }
+
+    function debounce<T extends (...args: never[]) => void>(fn: T, ms: number): T {
+        let t: number | undefined;
+        return ((...args: never[]) => {
+            if (t !== undefined) window.clearTimeout(t);
+            t = window.setTimeout(() => fn(...args), ms);
+        }) as T;
+    }
+
+    const observers = new WeakMap<HTMLElement, ResizeObserver>();
+
+    function boot() {
+        document.querySelectorAll<HTMLElement>('[data-weeks]').forEach((host) => {
+            draw(host);
+            // Reuse one observer per host across view transitions.
+            if (!observers.has(host)) {
+                const ro = new ResizeObserver(debounce(() => draw(host), 100));
+                ro.observe(host);
+                observers.set(host, ro);
+            }
+        });
+    }
+
+    boot();
+    document.addEventListener('astro:page-load', boot);
+</script>
