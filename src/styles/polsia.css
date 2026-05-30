@@ -197,6 +197,55 @@
     font-size: 0.85em;
 }
 
+/* ── Furthest-outlier table ── */
+.polsia-table {
+    width: 100%;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    font-family: var(--polsia-sans);
+    font-size: 0.85rem;
+}
+
+.polsia-table th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--polsia-fg-alt);
+    border-bottom: 1px solid var(--polsia-border);
+    padding: 0.4rem 0.75rem 0.4rem 0;
+}
+
+.polsia-table td {
+    color: var(--polsia-fg);
+    border-bottom: 1px solid var(--polsia-fg-faintest);
+    padding: 0.45rem 0.75rem 0.45rem 0;
+    text-align: left;
+    vertical-align: top;
+}
+
+.polsia-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Similarity column: monospace, narrow, muted */
+.polsia-table th:first-child,
+.polsia-table td:first-child {
+    font-family: var(--polsia-mono);
+    color: var(--polsia-fg-muted);
+    white-space: nowrap;
+    width: 1%;
+}
+
+.polsia-cap {
+    margin-top: 0.65rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.8rem;
+    color: var(--polsia-fg-muted);
+    max-width: 620px;
+}
+
 /* ── Responsive KPI grid ── */
 @media (max-width: 720px) {
     .polsia-stats {

@@ -10,7 +10,6 @@ import IdeaPaths from '../../../components/polsia/IdeaPaths.astro';
 import CadenceChart from '../../../components/polsia/CadenceChart.astro';
 import IdeaMap from '../../../components/polsia/IdeaMap.astro';
 import ThemesChart from '../../../components/polsia/ThemesChart.astro';
-import TemplatesChart from '../../../components/polsia/TemplatesChart.astro';
 import '../../../styles/polsia.css';
 
 export const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -64,12 +63,30 @@ scatter and theme list update live.
 
 <ThemesChart />
 
-## how often is each opening reused
+## the furthest-out ideas
 
-<TemplatesChart />
+The opposite of a dense cluster: the ideas with no close neighbour anywhere in the
+corpus, ranked by similarity to their single nearest match (lower is more alone).
 
-A handful of templates do most of the work: `an ai…`, `built for…`, `built an…`,
-`no more…`. The same shell repeats with different brand-name slot-fillers.
+<figure class="polsia-fig">
+  <table class="polsia-table">
+    <thead>
+      <tr><th>similarity</th><th>the idea</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0.559</td><td>county safety stats for North Georgia</td></tr>
+      <tr><td>0.595</td><td>a history project on America's first drag pageant (Memphis, 1969)</td></tr>
+      <tr><td>0.599</td><td>a hyperlocal news feed for one Texas town</td></tr>
+      <tr><td>0.610</td><td>a wedding-estate venue on Iowa prairie land</td></tr>
+      <tr><td>0.613</td><td>a spiritual manifesto (“we are God, literally”)</td></tr>
+    </tbody>
+  </table>
+  <figcaption class="polsia-cap">
+    Similarity is each idea's cosine match to its nearest neighbour in the 1024-d
+    embedding space. Even the loneliest idea still scores 0.559, so nothing here is
+    truly one of a kind.
+  </figcaption>
+</figure>
 
 ## the take
 

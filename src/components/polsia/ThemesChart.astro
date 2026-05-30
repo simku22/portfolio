@@ -1,20 +1,42 @@
 ---
-// ThemesChart — horizontal bars of how many ideas fall in each HDBSCAN theme.
-// Reads the shared store so it tracks the map's search box live.
+// ThemesChart — treemap of how many ideas fall in each HDBSCAN theme. Cell area
+// is proportional to theme size; reads the shared store so it tracks the map's
+// search box live. When filtered the few matching themes become large, readable
+// cells; unfiltered, the dominant themes stay labelled and the long tail is
+// colour + hover. Replaces the old 51-row bar chart.
 ---
 
 <div class="polsia-fig" data-themes>
     <div data-themes-host>
-        <!-- Reserve the full-corpus height (51 themes × 18 + 40) so the bar
-             chart swaps in without a layout jump when the map data lands. -->
-        <div class="polsia-loading" style="height:958px">themes appear once the map loads…</div>
+        <div class="polsia-loading" style="height:440px">themes appear once the map loads…</div>
     </div>
+    <p class="polsia-cap">
+        Each cell is a theme; its area is how many ideas fall in it. Hover any cell for
+        its full keyword set and share.
+    </p>
 </div>
 
 <script>
-    import * as Plot from '@observablehq/plot';
-    import { clusterColor, debounce, plotStyle, onCleanup } from '../../lib/polsia-charts.js';
+    import { hierarchy, treemap } from 'd3-hierarchy';
+    import { clusterColor, debounce, onCleanup } from '../../lib/polsia-charts.js';
     import { state, onChange, filteredTweets } from '../../lib/polsia-store.js';
+
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const el = (tag, attrs = {}) => {
+        const e = document.createElementNS(SVGNS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        return e;
+    };
+
+    // Pick black or white text for legibility on a given cell colour.
+    function textOn(hex) {
+        const c = hex.replace('#', '');
+        const r = parseInt(c.slice(0, 2), 16) / 255;
+        const g = parseInt(c.slice(2, 4), 16) / 255;
+        const b = parseInt(c.slice(4, 6), 16) / 255;
+        const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        return L > 0.6 ? '#111827' : '#ffffff';
+    }
 
     function init(root) {
         const host = root.querySelector('[data-themes-host]');
@@ -24,7 +46,6 @@
             const s = state();
             if (!s.tweets || !s.clusters) return;
             const data = filteredTweets();
-            const q = (s.query || '').trim();
 
             const counts = new Map();
             for (const d of data) {
@@ -32,48 +53,89 @@
                 counts.set(d.c, (counts.get(d.c) ?? 0) + 1);
             }
             const active = s.clusters
-                .map((c) => ({ ...c, n_matching: counts.get(c.id) ?? 0 }))
-                .filter((c) => c.n_matching > 0)
-                .sort((a, b) => b.n_matching - a.n_matching);
+                .map((c) => ({ ...c, n: counts.get(c.id) ?? 0 }))
+                .filter((c) => c.n > 0)
+                .sort((a, b) => b.n - a.n);
 
             if (active.length === 0) {
                 host.innerHTML =
-                    '<div class="polsia-loading" style="height:160px">no themes match this filter</div>';
+                    '<div class="polsia-loading" style="height:200px">no themes match this filter</div>';
                 return;
             }
 
             const total = data.filter((d) => d.c !== -1).length || 1;
             const width = Math.max(280, Math.floor(host.clientWidth) || 700);
             lastW = width;
-            const marginLeft = width < 560 ? 150 : 200;
+            const height = width < 560 ? 340 : 440;
 
-            const fig = Plot.plot({
-                width,
-                height: Math.max(160, active.length * 18 + 40),
-                marginLeft,
-                style: plotStyle(),
-                x: { label: q ? 'ideas matching filter' : 'ideas in theme', grid: true },
-                y: { label: null, domain: active.map((c) => c.label) },
-                color: {
-                    type: 'categorical',
-                    domain: active.map((c) => c.id),
-                    range: active.map((c) => clusterColor(c.id)),
-                },
-                marks: [
-                    Plot.barX(active, { x: 'n_matching', y: 'label', fill: 'id', sort: { y: 'x', reverse: true } }),
-                    Plot.text(active, {
-                        x: 'n_matching',
-                        y: 'label',
-                        text: (d) => `${d.n_matching} (${((d.n_matching / total) * 100).toFixed(0)}%)`,
-                        dx: 4,
-                        fontSize: 10,
-                        textAnchor: 'start',
-                        fill: 'var(--polsia-fg-muted)',
-                    }),
-                    Plot.ruleX([0]),
-                ],
-            });
-            host.replaceChildren(fig);
+            const rootNode = hierarchy({ children: active })
+                .sum((d) => d.n)
+                .sort((a, b) => b.value - a.value);
+            treemap().size([width, height]).paddingInner(2).round(true)(rootNode);
+
+            const svg = el('svg', { viewBox: `0 0 ${width} ${height}`, width, height });
+            svg.style.maxWidth = '100%';
+            svg.style.height = 'auto';
+            svg.style.display = 'block';
+
+            let i = 0;
+            for (const leaf of rootNode.leaves()) {
+                const x = leaf.x0;
+                const y = leaf.y0;
+                const w = leaf.x1 - leaf.x0;
+                const h = leaf.y1 - leaf.y0;
+                const d = leaf.data;
+                const color = clusterColor(d.id);
+                const tc = textOn(color);
+
+                const g = el('g');
+                const rect = el('rect', { x, y, width: w, height: h, fill: color, rx: 3, ry: 3 });
+                const title = el('title');
+                title.textContent = `${d.label}\n${d.n} ideas (${((d.n / total) * 100).toFixed(0)}%)`;
+                rect.appendChild(title);
+                g.appendChild(rect);
+
+                if (w >= 40 && h >= 20) {
+                    const clip = 'tmclip' + i++;
+                    const cp = el('clipPath', { id: clip });
+                    cp.appendChild(
+                        el('rect', {
+                            x: x + 5,
+                            y: y + 4,
+                            width: Math.max(0, w - 10),
+                            height: Math.max(0, h - 8),
+                        })
+                    );
+                    svg.appendChild(cp);
+
+                    const count = el('text', {
+                        x: x + 6,
+                        y: y + 16,
+                        'clip-path': `url(#${clip})`,
+                        fill: tc,
+                        'font-size': 12,
+                        'font-weight': 700,
+                    });
+                    count.textContent = String(d.n);
+                    g.appendChild(count);
+
+                    if (h >= 34 && w >= 64) {
+                        const lab = el('text', {
+                            x: x + 6,
+                            y: y + 30,
+                            'clip-path': `url(#${clip})`,
+                            fill: tc,
+                            'font-size': 10,
+                            'fill-opacity': 0.82,
+                        });
+                        lab.textContent = d.label;
+                        g.appendChild(lab);
+                    }
+                }
+                svg.appendChild(g);
+            }
+
+            host.replaceChildren(svg);
         };
 
         const offChange = onChange(render);
