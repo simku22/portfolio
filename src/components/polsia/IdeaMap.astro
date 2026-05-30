@@ -1,0 +1,183 @@
+---
+// IdeaMap — the centerpiece. 24,860 ideas plotted by UMAP semantic position,
+// coloured by HDBSCAN cluster. A text search and an outlier toggle filter the
+// scatter live and (via the shared store) the themes bar below it. The heavy
+// tweets.json fetch is deferred until the section scrolls into view.
+---
+
+<div class="polsia-fig" data-ideamap>
+    <div class="polsia-controls">
+        <input
+            type="text"
+            class="polsia-search"
+            data-search
+            aria-label="Search the idea text"
+            placeholder="search the idea text, e.g. cold outreach, dental, real estate, agent…"
+        />
+        <label class="polsia-toggle">
+            <input type="checkbox" data-outliers checked />
+            <span>include outliers (the 41% of ideas that didn’t fall into a dense cluster)</span>
+        </label>
+    </div>
+    <p class="polsia-count" data-count role="status" aria-live="polite"></p>
+    <div
+        class="polsia-scatter"
+        data-scatter
+        role="img"
+        aria-label="Scatter plot of 24,860 ideas positioned by semantic similarity and coloured by theme. Theme names and counts are listed in the themes chart below."
+    >
+        <div class="polsia-loading" style="height:640px">
+            scroll down, the map loads when it reaches you…
+        </div>
+    </div>
+</div>
+
+<script>
+    import * as Plot from '@observablehq/plot';
+    import {
+        loadJSON,
+        clusterColor,
+        outlierColor,
+        onThemeChange,
+        whenVisible,
+        debounce,
+        onCleanup,
+    } from '../../lib/polsia-charts.js';
+    import { state, setFilter, setData, onChange, filteredTweets } from '../../lib/polsia-store.js';
+
+    function init(root) {
+        const searchEl = root.querySelector('[data-search]');
+        const outliersEl = root.querySelector('[data-outliers]');
+        const countEl = root.querySelector('[data-count]');
+        const scatterHost = root.querySelector('[data-scatter]');
+
+        // The store is a window singleton that survives client-side navigation,
+        // but the freshly-swapped inputs reset to their HTML defaults. Hydrate
+        // them from the persisted filter so the controls match what's rendered.
+        searchEl.value = state().query || '';
+        outliersEl.checked = state().includeOutliers;
+
+        // Wire inputs → shared store.
+        searchEl.addEventListener(
+            'input',
+            debounce(() => setFilter({ query: searchEl.value }), 160)
+        );
+        outliersEl.addEventListener('change', () => setFilter({ includeOutliers: outliersEl.checked }));
+
+        const renderCount = () => {
+            const s = state();
+            if (!s.tweets) return;
+            const q = (s.query || '').trim().toLowerCase();
+            const data = filteredTweets();
+            const total = s.tweets.length;
+            const nClustered = (q ? s.tweets.filter((d) => d.t.toLowerCase().includes(q)) : s.tweets).filter(
+                (d) => d.c !== -1
+            ).length;
+            const matched = q ? s.tweets.filter((d) => d.t.toLowerCase().includes(q)).length : total;
+            const nOutliers = matched - nClustered;
+            const fmt = (n) => n.toLocaleString();
+            if (q) {
+                countEl.innerHTML = `<strong>${fmt(data.length)}</strong> of ${fmt(total)} ideas match “${escapeHtml(q)}”: ${fmt(nClustered)} in a cluster, ${fmt(nOutliers)} outliers`;
+            } else {
+                countEl.innerHTML = `<strong>${fmt(data.length)}</strong> of ${fmt(total)} ideas plotted${
+                    !s.includeOutliers ? `. <em>${fmt(nOutliers)} outliers hidden by the toggle above</em>` : ''
+                }`;
+            }
+        };
+
+        let lastW = 0;
+        const renderScatter = () => {
+            const s = state();
+            if (!s.tweets) return;
+            const data = filteredTweets();
+            const cl = s.clusters;
+            const labelById = new Map(cl.map((c) => [c.id, c.label]));
+            const width = Math.max(280, Math.floor(scatterHost.clientWidth) || 700);
+            lastW = width;
+            const height = width < 560 ? 460 : 640;
+
+            const fig = Plot.plot({
+                width,
+                height,
+                axis: null,
+                margin: 0,
+                style: { background: 'transparent' },
+                color: {
+                    type: 'categorical',
+                    domain: [...cl.map((c) => c.id), -1],
+                    range: [...cl.map((c) => clusterColor(c.id)), outlierColor()],
+                },
+                marks: [
+                    Plot.dot(data, {
+                        x: 'x',
+                        y: 'y',
+                        r: (d) => (d.c === -1 ? 1.4 : 2.8),
+                        fill: 'c',
+                        fillOpacity: (d) => (d.c === -1 ? 0.3 : 0.78),
+                        stroke: 'none',
+                        title: (d) => `${labelById.get(d.c) || 'outlier'}\n\n${d.t}`,
+                        tip: { fontSize: 12 },
+                    }),
+                ],
+            });
+            scatterHost.replaceChildren(fig);
+        };
+
+        const renderAll = () => {
+            renderCount();
+            renderScatter();
+        };
+
+        const offChange = onChange(renderAll);
+        const offTheme = onThemeChange(() => {
+            if (state().tweets) renderScatter();
+        });
+        const ro = new ResizeObserver(
+            debounce(() => {
+                if (state().tweets && Math.abs((scatterHost.clientWidth || 0) - lastW) > 2) renderScatter();
+            }, 160)
+        );
+        ro.observe(scatterHost);
+        onCleanup(() => {
+            offChange();
+            offTheme();
+            ro.disconnect();
+        });
+
+        // Defer the 5.5 MB fetch until the reader nears the map. On a revisit the
+        // window-singleton store already holds the data, so skip the refetch and
+        // JSON.parse — just re-render into the fresh DOM.
+        whenVisible(root, async () => {
+            if (state().tweets && state().clusters) {
+                renderAll();
+                return;
+            }
+            try {
+                const [tweets, clusters] = await Promise.all([
+                    loadJSON('tweets.json'),
+                    loadJSON('clusters.json'),
+                ]);
+                setData(tweets, clusters);
+            } catch (err) {
+                scatterHost.innerHTML =
+                    '<div class="polsia-loading" style="height:640px">couldn’t load the map data</div>';
+                console.error(err);
+            }
+        });
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    }
+
+    function boot() {
+        document.querySelectorAll('[data-ideamap]').forEach((root) => {
+            if (root.dataset.ready) return;
+            root.dataset.ready = '1';
+            init(root);
+        });
+    }
+
+    boot();
+    document.addEventListener('astro:page-load', boot);
+</script>

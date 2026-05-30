@@ -1,0 +1,206 @@
+/* ───────────────────────────────────────────────────────────────────
+   Polsia data-essay — theme variables + chart/figure styling.
+   Maps the original Observable "air" light theme onto the portfolio's
+   palette, with dark-mode overrides that mirror the site's .dark scheme.
+   Imported once by the MDX post.
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+    --polsia-sans: 'DM Sans', system-ui, sans-serif;
+    --polsia-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+    --polsia-fg: #1f2937;
+    --polsia-fg-alt: #111827;
+    --polsia-fg-muted: #6b7280;
+    --polsia-fg-faint: #9ca3af;
+    --polsia-fg-fainter: #b1b3b5;
+    --polsia-fg-faintest: #e5e7eb;
+    --polsia-bg: #ffffff;
+    --polsia-bg-alt: #f9fafb;
+    --polsia-border: #e5e7eb;
+    --polsia-accent: #4c78a8;
+    --polsia-launch: #e45756;
+}
+
+/* `.dark` is toggled on <html>, which is also matched by `:root` (specificity
+   0,1,0). `:root.dark` (0,2,0) outranks it so these overrides actually win —
+   a plain `.dark` or `:where(.dark)` selector would silently lose to `:root`. */
+:root.dark {
+    --polsia-fg: #e5e7eb;
+    --polsia-fg-alt: #f9fafb;
+    --polsia-fg-muted: #9ca3af;
+    --polsia-fg-faint: #6b7280;
+    --polsia-fg-fainter: #6b7280;
+    --polsia-fg-faintest: #374151;
+    --polsia-bg: rgba(31, 41, 55, 0.5);
+    --polsia-bg-alt: rgba(55, 65, 81, 0.4);
+    --polsia-border: #374151;
+    --polsia-accent: #6ea3d8;
+    --polsia-launch: #f87171;
+}
+
+/* ── Figure wrapper shared by every chart island ── */
+.polsia-fig {
+    margin: 1.75rem 0;
+    font-family: var(--polsia-sans);
+    color: var(--polsia-fg);
+}
+
+.polsia-fig figure {
+    margin: 0;
+    max-width: 100%;
+}
+
+/* Observable Plot injects its own <svg>; keep it fluid + transparent */
+.polsia-fig svg {
+    max-width: 100%;
+    height: auto;
+    background: transparent;
+    /* Plot's hover-tip rect fills with var(--plot-background) (default white);
+       theme it so the tip box matches the surface in dark mode. */
+    --plot-background: #ffffff;
+}
+
+:root.dark .polsia-fig svg {
+    --plot-background: #1f2937;
+}
+
+/* Loading / empty placeholder so there's no layout jump before data lands */
+.polsia-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--polsia-fg-faint);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Plot's hover tip — make it legible in dark mode */
+.polsia-fig [aria-label='tip'] text,
+.polsia-fig g[aria-label='tip'] text {
+    fill: var(--polsia-fg);
+}
+
+/* ── KPI stat cards ── */
+.polsia-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin: 1.25rem 0 2rem;
+    max-width: 900px;
+}
+
+.polsia-stat {
+    border-left: 2px solid var(--polsia-fg-faintest);
+    padding: 0.25rem 0 0.25rem 1rem;
+}
+
+.polsia-stat-val {
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--polsia-fg-alt);
+}
+
+.polsia-stat-lbl {
+    color: var(--polsia-fg-muted);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.polsia-stat-sub {
+    color: var(--polsia-fg-faint);
+    font-size: 0.75rem;
+    margin-top: 0.1rem;
+}
+
+/* ── Map controls (search + outlier toggle) ── */
+.polsia-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin: 0.5rem 0 0.75rem;
+}
+
+.polsia-search {
+    width: 100%;
+    max-width: 480px;
+    font-family: var(--polsia-sans);
+    font-size: 0.9rem;
+    color: var(--polsia-fg);
+    background: var(--polsia-bg);
+    border: 1px solid var(--polsia-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.polsia-search::placeholder {
+    color: var(--polsia-fg-faint);
+}
+
+.polsia-search:focus {
+    outline: none;
+    border-color: var(--polsia-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--polsia-accent) 18%, transparent);
+}
+
+.polsia-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--polsia-fg-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.polsia-toggle input {
+    width: 0.95rem;
+    height: 0.95rem;
+    accent-color: var(--polsia-accent);
+    cursor: pointer;
+}
+
+.polsia-count {
+    color: var(--polsia-fg-muted);
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+}
+
+.polsia-count strong {
+    color: var(--polsia-fg-alt);
+}
+
+/* The scatter is tall; give it a reserved min-height to avoid CLS */
+.polsia-scatter {
+    min-height: 640px;
+}
+
+@media (max-width: 640px) {
+    .polsia-scatter {
+        min-height: 460px;
+    }
+}
+
+/* ── Section caption / disclaimer ── */
+.polsia-note {
+    max-width: 680px;
+    color: var(--polsia-fg-muted);
+    font-size: 0.9rem;
+}
+
+.polsia-note code {
+    font-family: var(--polsia-mono);
+    font-size: 0.85em;
+}
+
+/* ── Responsive KPI grid ── */
+@media (max-width: 720px) {
+    .polsia-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}

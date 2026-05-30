@@ -1,0 +1,67 @@
+---
+// StatCards — the four account KPIs above the cadence chart. Static facts
+// (account age, all-time total, followers) plus sample size derived live from
+// summary.json so the "% of all tweets" stays in sync with the data.
+---
+
+<div class="polsia-fig">
+    <div data-statcards class="polsia-stats">
+        <div class="polsia-loading" style="grid-column:1/-1;height:80px">loading…</div>
+    </div>
+</div>
+
+<script>
+    import { loadJSON } from '../../lib/polsia-charts.js';
+
+    async function init(host) {
+        const s = await loadJSON('summary.json');
+
+        const accountCreated = new Date('2025-10-31T11:28:12Z');
+        const dataStart = new Date(s.time_min);
+        const dataEnd = new Date(s.time_max);
+        const sampleH = ((dataEnd - dataStart) / 3600000).toFixed(0);
+        const totalStatusCount = 203069;
+        const accountAgeDays = Math.round((dataEnd - accountCreated) / 86400000);
+        const avgPerDay = Math.round(totalStatusCount / accountAgeDays);
+
+        const facts = [
+            { lbl: '@polsia account created', val: 'Oct 31, 2025', sub: `${accountAgeDays} days before today` },
+            {
+                lbl: 'total tweets, all-time',
+                val: totalStatusCount.toLocaleString(),
+                sub: `~${avgPerDay.toLocaleString()}/day average`,
+            },
+            { lbl: 'followers', val: '19,684', sub: 'follows 1 account · blue-verified' },
+            {
+                lbl: 'our sample size',
+                val: s.n_tweets.toLocaleString(),
+                sub: `~${((s.n_tweets / totalStatusCount) * 100).toFixed(1)}% of all tweets · ${sampleH}h window`,
+            },
+        ];
+
+        host.innerHTML = facts
+            .map(
+                (x) => `<div class="polsia-stat">
+                    <div class="polsia-stat-val">${x.val}</div>
+                    <div class="polsia-stat-lbl">${x.lbl}</div>
+                    <div class="polsia-stat-sub">${x.sub}</div>
+                </div>`
+            )
+            .join('');
+    }
+
+    function boot() {
+        document.querySelectorAll('[data-statcards]').forEach((host) => {
+            if (host.dataset.ready) return;
+            host.dataset.ready = '1';
+            init(host).catch((err) => {
+                host.innerHTML =
+                    '<div class="polsia-loading" style="grid-column:1/-1;height:80px">couldn’t load summary</div>';
+                console.error(err);
+            });
+        });
+    }
+
+    boot();
+    document.addEventListener('astro:page-load', boot);
+</script>

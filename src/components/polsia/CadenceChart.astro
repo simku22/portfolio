@@ -1,0 +1,153 @@
+---
+// CadenceChart — tweets/min over the collection window, with pre/post-launch
+// mean-rate reference lines and the launch marker. Port of the Observable
+// cadence plot. Data: cadence.json + summary.json.
+---
+
+<div class="polsia-fig">
+    <div data-cadence class="polsia-cadence">
+        <div class="polsia-loading" style="height:280px">loading cadence…</div>
+    </div>
+</div>
+
+<script>
+    import * as Plot from '@observablehq/plot';
+    import { loadJSON, makeChart, plotStyle } from '../../lib/polsia-charts.js';
+
+    async function init(host) {
+        const [cad, s] = await Promise.all([loadJSON('cadence.json'), loadJSON('summary.json')]);
+
+        const launchTime = new Date('2026-05-22T12:34:00Z'); // 8:34 AM ET
+        const dataStart = new Date(s.time_min);
+        const dataEnd = new Date(s.time_max);
+        const xDomain = [
+            new Date(dataStart.getTime() - 2 * 3600 * 1000),
+            new Date(dataEnd.getTime() + 2 * 3600 * 1000),
+        ];
+        const maxRate = Math.max(...cad.map((d) => d.count / 60));
+        const preRate = 1.65; // tweets/min, 49h before launch
+        const postRate = 3.05; // tweets/min, 109h after launch
+
+        makeChart(
+            host,
+            (width) =>
+                Plot.plot({
+                    height: 280,
+                    width,
+                    marginLeft: 60,
+                    style: plotStyle(),
+                    x: { label: 'time (UTC)', type: 'utc', domain: xDomain },
+                    y: {
+                        label: 'tweets per minute',
+                        grid: true,
+                        domain: [0, Math.ceil(maxRate * 1.15)],
+                    },
+                    marks: [
+                        Plot.areaY(cad, {
+                            x: (d) => new Date(d.hour),
+                            y: (d) => d.count / 60,
+                            fill: 'var(--polsia-accent)',
+                            fillOpacity: 0.16,
+                            curve: 'step',
+                        }),
+                        Plot.lineY(cad, {
+                            x: (d) => new Date(d.hour),
+                            y: (d) => d.count / 60,
+                            stroke: 'var(--polsia-accent)',
+                            strokeWidth: 1.5,
+                            curve: 'step',
+                        }),
+                        Plot.ruleY([preRate], {
+                            stroke: '#9095a0',
+                            strokeDasharray: '2 4',
+                            strokeWidth: 1,
+                        }),
+                        Plot.ruleY([postRate], {
+                            stroke: '#9095a0',
+                            strokeDasharray: '2 4',
+                            strokeWidth: 1,
+                        }),
+                        Plot.text([{ x: xDomain[0], y: preRate, label: `pre-launch avg ${preRate}/min` }], {
+                            x: 'x',
+                            y: 'y',
+                            text: 'label',
+                            dx: 6,
+                            dy: -4,
+                            fontSize: 10,
+                            fill: 'var(--polsia-fg-muted)',
+                            textAnchor: 'start',
+                        }),
+                        Plot.text(
+                            [
+                                {
+                                    x: xDomain[0],
+                                    y: postRate,
+                                    label: `post-launch avg ${postRate}/min (${(postRate / preRate).toFixed(1)}×)`,
+                                },
+                            ],
+                            {
+                                x: 'x',
+                                y: 'y',
+                                text: 'label',
+                                dx: 6,
+                                dy: -4,
+                                fontSize: 10,
+                                fill: 'var(--polsia-fg-muted)',
+                                textAnchor: 'start',
+                            }
+                        ),
+                        Plot.ruleX([launchTime], {
+                            stroke: 'var(--polsia-launch)',
+                            strokeDasharray: '4 4',
+                            strokeWidth: 1.5,
+                        }),
+                        Plot.dot([{ x: launchTime, y: 0 }], {
+                            x: 'x',
+                            y: 'y',
+                            r: 4,
+                            fill: 'var(--polsia-launch)',
+                        }),
+                        Plot.text([{ x: launchTime, y: maxRate * 1.08, label: 'polsia.com launch tweet' }], {
+                            x: 'x',
+                            y: 'y',
+                            text: 'label',
+                            dx: 6,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            fill: 'var(--polsia-launch)',
+                            textAnchor: 'start',
+                        }),
+                        Plot.text(
+                            [{ x: launchTime, y: maxRate * 0.96, label: 'May 22 · 8:34 AM ET · 5.7M views' }],
+                            {
+                                x: 'x',
+                                y: 'y',
+                                text: 'label',
+                                dx: 6,
+                                fontSize: 10,
+                                fill: 'var(--polsia-fg-muted)',
+                                textAnchor: 'start',
+                            }
+                        ),
+                        Plot.ruleY([0]),
+                    ],
+                }),
+            { onTheme: true }
+        );
+    }
+
+    function boot() {
+        document.querySelectorAll('[data-cadence]').forEach((host) => {
+            if (host.dataset.ready) return;
+            host.dataset.ready = '1';
+            init(host).catch((err) => {
+                host.innerHTML =
+                    '<div class="polsia-loading" style="height:280px">couldn’t load cadence data</div>';
+                console.error(err);
+            });
+        });
+    }
+
+    boot();
+    document.addEventListener('astro:page-load', boot);
+</script>

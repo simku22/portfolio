@@ -6,6 +6,9 @@ const blog = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string(),
+        // Defaults to the site owner so every post carries a byline without
+        // needing per-file frontmatter; override in frontmatter for guests.
+        author: z.string().default('Simon Kurgan'),
         // Transform string to Date object
         pubDate: z.coerce.date(),
         updatedDate: z.coerce.date().optional(),

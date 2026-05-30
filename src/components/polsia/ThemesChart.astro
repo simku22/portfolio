@@ -1,0 +1,103 @@
+---
+// ThemesChart — horizontal bars of how many ideas fall in each HDBSCAN theme.
+// Reads the shared store so it tracks the map's search box live.
+---
+
+<div class="polsia-fig" data-themes>
+    <div data-themes-host>
+        <!-- Reserve the full-corpus height (51 themes × 18 + 40) so the bar
+             chart swaps in without a layout jump when the map data lands. -->
+        <div class="polsia-loading" style="height:958px">themes appear once the map loads…</div>
+    </div>
+</div>
+
+<script>
+    import * as Plot from '@observablehq/plot';
+    import { clusterColor, debounce, plotStyle, onCleanup } from '../../lib/polsia-charts.js';
+    import { state, onChange, filteredTweets } from '../../lib/polsia-store.js';
+
+    function init(root) {
+        const host = root.querySelector('[data-themes-host]');
+        let lastW = 0;
+
+        const render = () => {
+            const s = state();
+            if (!s.tweets || !s.clusters) return;
+            const data = filteredTweets();
+            const q = (s.query || '').trim();
+
+            const counts = new Map();
+            for (const d of data) {
+                if (d.c === -1) continue;
+                counts.set(d.c, (counts.get(d.c) ?? 0) + 1);
+            }
+            const active = s.clusters
+                .map((c) => ({ ...c, n_matching: counts.get(c.id) ?? 0 }))
+                .filter((c) => c.n_matching > 0)
+                .sort((a, b) => b.n_matching - a.n_matching);
+
+            if (active.length === 0) {
+                host.innerHTML =
+                    '<div class="polsia-loading" style="height:160px">no themes match this filter</div>';
+                return;
+            }
+
+            const total = data.filter((d) => d.c !== -1).length || 1;
+            const width = Math.max(280, Math.floor(host.clientWidth) || 700);
+            lastW = width;
+            const marginLeft = width < 560 ? 150 : 200;
+
+            const fig = Plot.plot({
+                width,
+                height: Math.max(160, active.length * 18 + 40),
+                marginLeft,
+                style: plotStyle(),
+                x: { label: q ? 'ideas matching filter' : 'ideas in theme', grid: true },
+                y: { label: null, domain: active.map((c) => c.label) },
+                color: {
+                    type: 'categorical',
+                    domain: active.map((c) => c.id),
+                    range: active.map((c) => clusterColor(c.id)),
+                },
+                marks: [
+                    Plot.barX(active, { x: 'n_matching', y: 'label', fill: 'id', sort: { y: 'x', reverse: true } }),
+                    Plot.text(active, {
+                        x: 'n_matching',
+                        y: 'label',
+                        text: (d) => `${d.n_matching} (${((d.n_matching / total) * 100).toFixed(0)}%)`,
+                        dx: 4,
+                        fontSize: 10,
+                        textAnchor: 'start',
+                        fill: 'var(--polsia-fg-muted)',
+                    }),
+                    Plot.ruleX([0]),
+                ],
+            });
+            host.replaceChildren(fig);
+        };
+
+        const offChange = onChange(render);
+        const ro = new ResizeObserver(
+            debounce(() => {
+                if (state().tweets && Math.abs((host.clientWidth || 0) - lastW) > 2) render();
+            }, 160)
+        );
+        ro.observe(host);
+        onCleanup(() => {
+            offChange();
+            ro.disconnect();
+        });
+        render();
+    }
+
+    function boot() {
+        document.querySelectorAll('[data-themes]').forEach((root) => {
+            if (root.dataset.ready) return;
+            root.dataset.ready = '1';
+            init(root);
+        });
+    }
+
+    boot();
+    document.addEventListener('astro:page-load', boot);
+</script>
