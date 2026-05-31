@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Date from '../components/date.astro';
+import BlogDock from '../components/BlogDock.astro';
 import '../../global.css';
 
 const posts = (await getCollection('blog')).sort(
@@ -11,7 +12,7 @@ const posts = (await getCollection('blog')).sort(
 ---
 
 <Layout>
-    <div class="min-h-screen px-4 md:px-[10%] pt-24 pb-12">
+    <div class="min-h-screen px-4 md:px-[10%] pt-24 pb-28">
         <div class="max-w-4xl mx-auto">
             <a
                 href={import.meta.env.BASE_URL || '/'}
@@ -77,4 +78,5 @@ const posts = (await getCollection('blog')).sort(
             </div>
         </div>
     </div>
+    <BlogDock />
 </Layout>

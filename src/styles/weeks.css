@@ -25,17 +25,19 @@
     /* Five-step blue ramp used when the GitHub overlay is active. Intentionally
        skips #3b82f6 (the "now" ring colour) so the ring stays distinguishable
        at any level. */
-    --weeks-gh-0: #e2e8f2;
-    --weeks-gh-1: #c5d6f0;
-    --weeks-gh-2: #7fa5e8;
+    /* Level 0 (no activity) is a calm light blue-gray rather than near-white,
+       so the quiet weeks read as definite cells on the white card instead of
+       a washed-out band. Still the lightest step, so "more = darker" holds. */
+    --weeks-gh-0: #ccd3df;
+    --weeks-gh-1: #aac6ee;
+    --weeks-gh-2: #6f9ce4;
     --weeks-gh-3: #2c5dc4;
     --weeks-gh-4: #14328e;
 
-    /* Hairline border on overlay cells so level-0 weeks (near-white fill on a
-       white card) stay delineated instead of vanishing — same trick GitHub's
-       own contribution graph uses. Visible in light, near-zero in dark where
-       cells already read against the deep card. */
-    --weeks-cell-stroke: rgba(30, 41, 59, 0.16);
+    /* Hairline border on overlay cells so empty weeks stay delineated, same
+       trick GitHub's own contribution graph uses. Visible in light, near-zero
+       in dark where cells already read against the deep card. */
+    --weeks-cell-stroke: rgba(30, 41, 59, 0.2);
 }
 
 /* `.dark` is on <html>, also matched by `:root`. `:root.dark` (specificity

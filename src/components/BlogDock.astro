@@ -1,0 +1,110 @@
+---
+// BlogDock — the socials "footer bar" as an always-floating dock for blog
+// reads (post + index pages), so the dark-mode toggle and links stay reachable.
+// Mirrors the landing dock's lifted appearance; no lift-off logic needed here.
+import { Image } from 'astro:assets';
+import DarkModeToggle from './DarkModeToggle.astro';
+import githubIcon from '../assets/github.svg';
+import linkedinIcon from '../assets/linkedin.svg';
+---
+
+<div class="blog-dock">
+    <a
+        href="https://github.com/simku22"
+        target="_blank"
+        aria-label="GitHub"
+        class="bd-link"
+    >
+        <Image src={githubIcon} alt="GitHub" class="bd-icon" />
+    </a>
+    <a
+        href="https://linkedin.com/in/simon-kurgan"
+        target="_blank"
+        aria-label="LinkedIn"
+        class="bd-link"
+    >
+        <Image src={linkedinIcon} alt="LinkedIn" class="bd-icon" />
+    </a>
+    <div class="bd-email">
+        <p>simku22 [at] uw.edu</p>
+    </div>
+    <DarkModeToggle />
+</div>
+
+<style>
+    .blog-dock {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 1rem;
+        margin-inline: auto;
+        width: max-content;
+        max-width: calc(100vw - 1.5rem);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(14px) saturate(180%);
+        -webkit-backdrop-filter: blur(14px) saturate(180%);
+        border: 1px solid rgba(229, 231, 235, 0.9);
+        border-radius: 0.5rem;
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.04),
+            0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .bd-link {
+        display: block;
+        transition: opacity 0.2s ease;
+    }
+
+    .bd-link:hover {
+        opacity: 0.75;
+    }
+
+    .bd-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: filter 0.3s ease;
+    }
+
+    .bd-email {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .bd-email p {
+        margin: 0;
+        font-size: 0.75rem;
+        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+        color: #1f2937;
+        white-space: nowrap;
+    }
+
+    :global(.dark) .blog-dock {
+        background: rgba(31, 41, 55, 0.78);
+        border-color: rgba(75, 85, 99, 0.7);
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.2),
+            0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    :global(.dark) .bd-icon {
+        filter: invert(1) brightness(2);
+    }
+
+    :global(.dark) .bd-email p {
+        color: #e5e7eb;
+    }
+
+    @media (max-width: 640px) {
+        .blog-dock {
+            left: 0.75rem;
+            right: 0.75rem;
+            margin-inline: 0;
+            width: auto;
+            justify-content: center;
+        }
+    }
+</style>
