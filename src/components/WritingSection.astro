@@ -2,7 +2,7 @@
 // WritingSection.astro - Expandable inline writing list, mirrors ExperienceSection styling
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
     (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
         b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
@@ -26,7 +26,6 @@ const posts = (await getCollection('blog')).sort(
             <path d="M6 9l6 6 6-6"></path>
         </svg>
         <span class="header-text">Writing</span>
-        <span class="count-pill">{posts.length}</span>
     </button>
 
     <div id="writing-content" class="writing-content">
@@ -152,16 +151,6 @@ const posts = (await getCollection('blog')).sort(
         color: #1f2937;
     }
 
-    .count-pill {
-        font-size: 0.6875rem;
-        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
-        color: #6b7280;
-        background: #f3f4f6;
-        padding: 0.0625rem 0.4375rem;
-        border-radius: 999px;
-        line-height: 1.4;
-    }
-
     .writing-content {
         display: grid;
         grid-template-rows: 0fr;
@@ -202,7 +191,7 @@ const posts = (await getCollection('blog')).sort(
     .post-link {
         display: block;
         border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
+        border-radius: 2px;
         padding: 0.875rem 1.125rem;
         background: #ffffff;
         text-decoration: none;
@@ -214,9 +203,7 @@ const posts = (await getCollection('blog')).sort(
     }
 
     .post-link:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-        border-color: #d1d5db;
+        border-color: #9ca3af;
     }
 
     .post-title-row {
@@ -260,7 +247,7 @@ const posts = (await getCollection('blog')).sort(
         color: #6b7280;
         background: #f3f4f6;
         padding: 0.125rem 0.4375rem;
-        border-radius: 0.25rem;
+        border-radius: 2px;
         letter-spacing: 0.01em;
         line-height: 1.4;
     }
@@ -278,13 +265,12 @@ const posts = (await getCollection('blog')).sort(
     }
 
     :global(.dark) .post-link {
-        background: rgba(31, 41, 55, 0.5);
-        border-color: #374151;
+        background: #000000;
+        border-color: #2a2a2a;
     }
 
     :global(.dark) .post-link:hover {
-        border-color: #4b5563;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        border-color: #525252;
     }
 
     :global(.dark) .post-title {
@@ -299,8 +285,7 @@ const posts = (await getCollection('blog')).sort(
         color: #d1d5db;
     }
 
-    :global(.dark) .tag,
-    :global(.dark) .count-pill {
+    :global(.dark) .tag {
         background: rgba(55, 65, 81, 0.5);
         color: #9ca3af;
     }

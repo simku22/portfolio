@@ -2,6 +2,7 @@
 title: 'Why an epiphany isnt around the corner'
 description: 'The grass is sufficiently green here.'
 pubDate: '2026-02-17'
+draft: true
 tags: ['life']
 ---
 

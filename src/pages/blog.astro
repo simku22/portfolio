@@ -5,7 +5,7 @@ import Date from '../components/date.astro';
 import BlogDock from '../components/BlogDock.astro';
 import '../../global.css';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
     (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
         b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
