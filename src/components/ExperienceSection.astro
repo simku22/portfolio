@@ -2,9 +2,8 @@
 // ExperienceSection.astro - Expandable experience & projects with card-based design
 import { Image } from 'astro:assets';
 import amazonLogo from '../assets/amazon.svg';
+import mercorLogo from '../assets/mercor.png';
 import mathAiLabLogo from '../assets/math-ai-lab.jpeg';
-import traffic1 from '../assets/projects/traffic-1.jpg';
-import traffic2 from '../assets/projects/traffic-2.jpg';
 ---
 
 <div class="experience-section">
@@ -35,101 +34,26 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
             <div class="cards-group">
                 <div class="group-label">Work</div>
 
-                <!-- Amazon: stacked roles (incoming full-time + year-round intern) -->
+                <!-- Mercor -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-logo card-logo-lg">
                             <Image
-                                src={amazonLogo}
-                                alt="Amazon"
-                                class="logo-img amazon-logo"
+                                src={mercorLogo}
+                                alt="Mercor"
+                                class="logo-img"
+                                widths={[80, 160]}
+                                sizes="56px"
                             />
                         </div>
                         <div class="card-meta">
                             <div class="card-title-row">
-                                <span class="card-company">Amazon</span>
-                                <span class="card-date">Nov 2023 – Present</span>
+                                <span class="card-company">Mercor</span>
+                                <span class="card-date">Jul 2026 – Present</span>
                             </div>
-                            <span class="card-subtle">Seattle, WA</span>
+                            <span class="card-role">Member of Technical Staff</span>
+                            <span class="card-subtle">San Francisco, CA</span>
                         </div>
-                    </div>
-
-                    <!-- Role 1: Prime Air (incoming full-time) -->
-                    <div class="role-block role-block-current">
-                        <div class="role-header">
-                            <div class="role-title-wrap">
-                                <span class="role-title">Software Engineer, Prime Air</span>
-                                <span class="drone" aria-hidden="true">
-                                    <svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg">
-                                        <!-- Body -->
-                                        <rect x="26" y="18" width="12" height="6" rx="2" fill="currentColor" opacity="0.85" />
-                                        <!-- Arms -->
-                                        <line x1="16" y1="14" x2="28" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                                        <line x1="48" y1="14" x2="36" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                                        <line x1="16" y1="28" x2="28" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                                        <line x1="48" y1="28" x2="36" y2="22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                                        <!-- Package -->
-                                        <rect x="28" y="24" width="8" height="6" fill="currentColor" opacity="0.6" />
-                                        <!-- Propellers (animated) -->
-                                        <g class="prop prop-tl" style="transform-origin: 16px 14px;">
-                                            <ellipse cx="16" cy="14" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
-                                        </g>
-                                        <g class="prop prop-tr" style="transform-origin: 48px 14px;">
-                                            <ellipse cx="48" cy="14" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
-                                        </g>
-                                        <g class="prop prop-bl" style="transform-origin: 16px 28px;">
-                                            <ellipse cx="16" cy="28" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
-                                        </g>
-                                        <g class="prop prop-br" style="transform-origin: 48px 28px;">
-                                            <ellipse cx="48" cy="28" rx="6" ry="1.2" fill="currentColor" opacity="0.55" />
-                                        </g>
-                                    </svg>
-                                </span>
-                            </div>
-                            <span class="role-date">Incoming Jun 2026</span>
-                        </div>
-                        <div class="card-tags">
-                            <span class="tag">Full-time</span>
-                            <span class="tag">Drone Delivery</span>
-                            <span class="tag">Robotics</span>
-                        </div>
-                    </div>
-
-                    <!-- Role 2: Year-Round Intern -->
-                    <div class="role-block">
-                        <div class="role-header">
-                            <span class="role-title">Software Engineer Intern (Year-Round)</span>
-                            <span class="role-date">Nov 2023 – Jun 2026</span>
-                        </div>
-                        <div class="card-tags">
-                            <span class="tag">AWS</span>
-                            <span class="tag">TypeScript</span>
-                            <span class="tag">Java</span>
-                            <span class="tag">Kotlin</span>
-                        </div>
-                        <ul class="card-bullets">
-                            <li>
-                                Migrated a Lambda-based file processing service to Fargate with Java 21
-                                and virtual threads, implementing streaming I/O to process terabytes of
-                                data with minimal memory during a petabyte-scale migration of billions
-                                of files.
-                            </li>
-                            <li>
-                                Built a workflow observability dashboard for global book publishing with
-                                React and Lambda, providing real-time failure diagnostics that
-                                eliminated cross-system investigation for 25% of on-call tickets.
-                            </li>
-                            <li>
-                                Replaced 5 manually-scaled CloudSearch domains with serverless
-                                OpenSearch using a DynamoDB Streams pipeline, reducing total storage by
-                                66% through document consolidation with upsert operations.
-                            </li>
-                            <li>
-                                Embedded debugging tools into a legacy JSP dashboard, consolidating
-                                cross-region checks into a single interface that eliminated 40+ seconds
-                                of navigation per incident.
-                            </li>
-                        </ul>
                     </div>
                 </div>
 
@@ -150,23 +74,179 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
                                 <span class="card-company">UW Math AI Lab</span>
                                 <span class="card-date">Feb 2026 – Present</span>
                             </div>
-                            <span class="card-role">Undergraduate Researcher</span>
-                            <div class="card-tags">
-                                <span class="tag">Lean</span>
-                                <span class="tag">Mathlib</span>
-                                <span class="tag">Knowledge Graphs</span>
-                                <span class="tag">Formal Math</span>
-                            </div>
+                            <span class="card-role">Research Assistant (PI: Vasily Ilin)</span>
+                            <span class="card-subtle">Seattle, WA</span>
+                        </div>
+                    </div>
+
+                    <!-- Video explainer (lite embed: thumbnail first, iframe on click) -->
+                    <div class="video-block">
+                        <button
+                            class="video-lite"
+                            type="button"
+                            data-video-id="H2z3VRRd4aQ"
+                            aria-label="Play the TheoremGraph video overview"
+                        >
+                            <img
+                                class="video-thumb"
+                                src="https://i.ytimg.com/vi/H2z3VRRd4aQ/hqdefault.jpg"
+                                alt="TheoremGraph video overview thumbnail"
+                                loading="lazy"
+                                width="480"
+                                height="360"
+                            />
+                            <span class="video-play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                            </span>
+                        </button>
+                        <div class="video-caption">
+                            <span class="video-caption-main"
+                                >TheoremGraph, explained in the style of 3Blue1Brown</span
+                            >
+                            <span class="video-caption-sub"
+                                >I wrote, animated, and narrated this overview of the paper. 6K+
+                                views on
+                                <a
+                                    href="https://www.youtube.com/watch?v=H2z3VRRd4aQ"
+                                    target="_blank"
+                                    class="project-link"
+                                    >YouTube<svg
+                                        class="link-arrow"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"></path></svg
+                                    ></a
+                                ></span
+                            >
                         </div>
                     </div>
                     <ul class="card-bullets">
                         <li>
-                            Building knowledge graphs over formalized mathematics in Lean / Mathlib to
-                            surface structural relationships between definitions, theorems, and proofs.
+                            Extracted the released formal graph of 388K declarations and 11.3M typed
+                            edges by running LeanGraph, the lab's Lean 4 elaborator-level extractor,
+                            over Mathlib and 24 community projects as Slurm array jobs on UW's HYAK
+                            cluster.
                         </li>
                         <li>
-                            Designing tooling to make the corpus tractable for downstream ML — search,
-                            retrieval, and graph-augmented prompting over the dependency network.
+                            Led the cross-corpus statement matching: embedded 11.7M arXiv statements
+                            and all Lean declarations into one semantic space (Qwen3 embeddings,
+                            pgvector/HNSW), linking restatements across papers and recovering known
+                            informal–formal pairs at 43% top-1 over the full open corpus.
+                        </li>
+                        <li>
+                            Beat LeanSearch v2's retriever by +10.3pp Recall@10 on MathlibQR, and
+                            showed retrieval raises Claude's autoformalization accuracy from 5/24 to
+                            8/24 unseen Mathlib theorems with 4× fewer tool calls.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Amazon -->
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-logo card-logo-lg">
+                            <Image src={amazonLogo} alt="Amazon" class="logo-img amazon-logo" />
+                        </div>
+                        <div class="card-meta">
+                            <div class="card-title-row">
+                                <span class="card-company">Amazon</span>
+                                <span class="card-date">Nov 2023 – Jun 2026</span>
+                            </div>
+                            <span class="card-role">Software Engineer Co-op</span>
+                            <span class="card-subtle">Seattle, WA</span>
+                        </div>
+                    </div>
+                    <ul class="card-bullets">
+                        <li>
+                            Migrated a Lambda file-processing service to Fargate for a
+                            petabyte-scale migration of billions of files (Java 21 virtual threads);
+                            stream-buffered multipart I/O raised the per-file limit from a few GB to
+                            2 TiB.
+                        </li>
+                        <li>
+                            Replaced 5 manually-scaled CloudSearch domains with serverless
+                            OpenSearch via a DynamoDB Streams pipeline, cutting total storage by 66%
+                            through document consolidation with upserts.
+                        </li>
+                        <li>
+                            Built a workflow observability dashboard for global book publishing with
+                            React and Lambda, providing real-time failure diagnostics that
+                            eliminated cross-system investigation for 25% of on-call tickets.
+                        </li>
+                        <li>
+                            Embedded debugging tools into a legacy JSP dashboard, consolidating
+                            cross-region checks into a single interface that eliminated 40+ seconds
+                            of navigation per incident.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Publications -->
+            <div class="cards-group">
+                <div class="group-label">Publications</div>
+
+                <!-- TheoremGraph -->
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-meta">
+                            <div class="card-title-row">
+                                <div class="card-company-group">
+                                    <span class="card-company">TheoremGraph</span>
+                                    <a
+                                        href="https://arxiv.org/abs/2606.25363"
+                                        target="_blank"
+                                        class="project-link"
+                                        >arXiv<svg
+                                            class="link-arrow"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                            ><path d="M7 17L17 7M9 7h8v8"></path></svg
+                                        ></a
+                                    >
+                                    <a
+                                        href="https://theoremsearch.com"
+                                        target="_blank"
+                                        class="project-link"
+                                        >theoremsearch.com<svg
+                                            class="link-arrow"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                            ><path d="M7 17L17 7M9 7h8v8"></path></svg
+                                        ></a
+                                    >
+                                </div>
+                                <span class="card-date"
+                                    >arXiv June 2026 · under review, ICLR 2027</span
+                                >
+                            </div>
+                            <span class="card-role">Bridging Formal and Informal Mathematics</span>
+                        </div>
+                    </div>
+                    <ul class="card-bullets">
+                        <li>
+                            First author of nine (advisors J. Alper, G. Inchiostro, V. Ilin). A
+                            unified statement-level dependency graph spanning informal and formal
+                            mathematics: 11.7M theorem-like environments parsed from math arXiv with
+                            18.3M candidate dependencies, plus LeanGraph, a Lean 4 elaborator-level
+                            extractor producing 388,105 declarations and 11.3M typed edges across 25
+                            Lean projects.
+                        </li>
+                        <li>
+                            Bridged the two graphs by embedding generated natural-language slogans
+                            into a shared semantic space. An LLM judge affirms 47,952
+                            informal–formal matches, with an 87% acceptance rate at cosine
+                            similarity ≥ 0.9.
+                        </li>
+                        <li>
+                            The same representation improves downstream tasks: retrieval raises
+                            correct autoformalizations from 5 to 8 of 24 held-out Mathlib theorems,
+                            and reaches 0.883 Recall@10 / 0.739 nDCG@10 on MathlibQR, +10.3pp /
+                            +11.6pp over LeanSearch v2's reranked system.
+                        </li>
+                        <li>
+                            Released the dataset, extractors, HTTP API, and MCP interface as
+                            infrastructure for mathematical search, attribution, and agentic
+                            formalization.
                         </li>
                     </ul>
                 </div>
@@ -176,113 +256,74 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
             <div class="cards-group">
                 <div class="group-label">Projects</div>
 
-                <!-- Cvrve -->
+                <!-- Open Problems Map -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
                             <div class="card-title-row">
                                 <div class="card-company-group">
-                                    <span class="card-company">Cvrve</span>
-                                    <a href="https://cvrve.me/" target="_blank" class="project-link">cvrve.me ↗</a>
+                                    <span class="card-company"
+                                        >The Growing Map of Open Problems</span
+                                    >
+                                    <a
+                                        href="https://open-problems-map.pages.dev"
+                                        target="_blank"
+                                        class="project-link"
+                                        >open-problems-map.pages.dev<svg
+                                            class="link-arrow"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                            ><path d="M7 17L17 7M9 7h8v8"></path></svg
+                                        ></a
+                                    >
                                 </div>
-                                <span class="card-date">March 2025</span>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">EC2</span>
-                                <span class="tag">DuckDB</span>
-                                <span class="tag">PostgreSQL</span>
-                                <span class="tag">TypeScript</span>
-                                <span class="tag">Express</span>
+                                <span class="card-date">August 2026</span>
                             </div>
                         </div>
                     </div>
                     <ul class="card-bullets">
                         <li>
-                            Created a bot that streamed 2000+ job postings to over 150,000 total
-                            users in SWE-related discord servers for UW, USC, UCI, and more.
-                        </li>
-                        <li>
-                            Built a URL-shortening and analytics service handling 5M+ total clicks
-                            with 70K daily peak traffic using Express, DuckDB, EC2, and PostgreSQL
-                            on a fully free-tier stack.
-                        </li>
-                        <li>
-                            Developed a headless-browser crawler to classify closed job links with
-                            95%+ accuracy, capture screenshots, and create pull requests using
-                            Puppeteer and the GitHub API.
+                            Applied the TheoremGraph pipeline to 15,458 open problems
+                            (UnsolvedMath), surfacing 77 already stated in Lean (RH, Goldbach, PFR,
+                            ...) and a "formalization frontier" of unformalized targets.
                         </li>
                     </ul>
                 </div>
 
-                <!-- Willow -->
+                <!-- Mesocosm -->
                 <div class="card">
                     <div class="card-top">
                         <div class="card-meta">
                             <div class="card-title-row">
-                                <span class="card-company">Willow</span>
-                                <span class="card-date">June 2025</span>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">LangChain</span>
-                                <span class="tag">Gemini</span>
-                                <span class="tag">Postfix</span>
-                                <span class="tag">RabbitMQ</span>
-                                <span class="tag">Firebase</span>
-                                <span class="tag">TypeScript</span>
-                                <span class="tag">Python</span>
+                                <div class="card-company-group">
+                                    <span class="card-company">Mesocosm</span>
+                                    <a
+                                        href="https://mesocosm.swecc.org"
+                                        target="_blank"
+                                        class="project-link"
+                                        >mesocosm.swecc.org<svg
+                                            class="link-arrow"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                            ><path d="M7 17L17 7M9 7h8v8"></path></svg
+                                        ></a
+                                    >
+                                </div>
+                                <span class="card-date">June 2026</span>
                             </div>
                         </div>
                     </div>
                     <ul class="card-bullets">
                         <li>
-                            Lead a team of 2 developers over a 6-month capstone to build a job-mail
-                            classification service.
+                            Built, with two teammates, a platform for creating controlled
+                            environments where LLM agents compete on tasks: a sandbox, an API, and a
+                            worker form a closed loop that lets anyone scaffold and evaluate a
+                            benchmark in minutes.
                         </li>
                         <li>
-                            Hosted Postfix and RabbitMQ on an EC2 instance to create a data
-                            pipeline, with LangChain and Gemini 2.0 to extract structured job
-                            statuses (e.g. rejection, interviews) from raw email data.
-                        </li>
-                        <li>
-                            Implemented full-stack security using Firebase's authentication service
-                            and displayed classification results on a React dashboard polling from
-                            Firestore.
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Traffic Light Optimization -->
-                <div class="card">
-                    <div class="card-top">
-                        <div class="card-meta">
-                            <div class="card-title-row">
-                                <span class="card-company">Traffic Light Optimization</span>
-                                <span class="card-date">June 2025</span>
-                            </div>
-                            <div class="card-tags">
-                                <span class="tag">Python</span>
-                                <span class="tag">Numpy</span>
-                                <span class="tag">Matplotlib</span>
-                                <span class="tag">LaTeX</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="img-stack" aria-label="Project screenshots">
-                        <div class="img-stack-item">
-                            <Image src={traffic1} alt="Traffic simulation" class="stack-img" widths={[300, 400]} sizes="200px" />
-                        </div>
-                        <div class="img-stack-item">
-                            <Image src={traffic2} alt="Traffic results" class="stack-img" widths={[300, 400]} sizes="200px" />
-                        </div>
-                    </div>
-                    <ul class="card-bullets">
-                        <li>
-                            Engineered a cellular automata–based traffic flow simulator and applied
-                            dual annealing to optimize light cycles.
-                        </li>
-                        <li>
-                            Modeled agent traffic through a DAG using Poisson-distributed spawning,
-                            efficient topological sorting, and linear shortest-path routing.
+                            Powered SWECCathon 2026, a hackathon where participants built benchmarks
+                            instead of apps (Claude and Gemini playing Jenga, RhetBench,
+                            TwisterBench). Now being open-sourced through SWECC Labs.
                         </li>
                     </ul>
                 </div>
@@ -319,28 +360,18 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         });
     }
 
-    // Image stack fan-out via event delegation (works regardless of DOM timing)
+    // Lite YouTube embed: swap the thumbnail for the real iframe on click
     document.addEventListener('click', function (e) {
-        var target = e.target;
-        var stack = target.closest('.img-stack');
-
-        if (stack) {
-            e.stopPropagation();
-            var wasFanned = stack.classList.contains('is-fanned');
-            // Close all stacks
-            document.querySelectorAll('.img-stack.is-fanned').forEach(function (s) {
-                s.classList.remove('is-fanned');
-            });
-            // Toggle clicked one
-            if (!wasFanned) {
-                stack.classList.add('is-fanned');
-            }
-        } else {
-            // Clicked outside — close all
-            document.querySelectorAll('.img-stack.is-fanned').forEach(function (s) {
-                s.classList.remove('is-fanned');
-            });
-        }
+        var btn = e.target.closest('.video-lite');
+        if (!btn || btn.dataset.loaded) return;
+        btn.dataset.loaded = '1';
+        var id = btn.dataset.videoId;
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+        iframe.title = 'TheoremGraph video overview';
+        iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        btn.replaceChildren(iframe);
     });
 
     // Initialize toggle
@@ -561,6 +592,7 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
     }
 
     .project-link {
+        white-space: nowrap;
         font-size: 0.8125rem;
         color: #3b82f6;
         text-decoration: none;
@@ -568,195 +600,108 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         transition: color 0.2s ease;
     }
 
-    .project-link:hover {
-        color: #2563eb;
-        text-decoration: underline;
-        text-underline-offset: 2px;
-    }
-
-    /* ── Role blocks (stacked roles in one card) ── */
-    .role-block {
-        margin-top: 0.875rem;
-        padding-top: 0.875rem;
-        border-top: 1px dashed #e5e7eb;
-    }
-
-    .role-block-current {
-        position: relative;
-    }
-
-    .role-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.375rem;
-    }
-
-    .role-title-wrap {
+    .project-link {
         display: inline-flex;
         align-items: center;
-        gap: 0.375rem;
+        gap: 0.2em;
     }
 
-    .role-title {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #1f2937;
-    }
-
-    .role-date {
-        font-size: 0.75rem;
-        color: #9ca3af;
-        white-space: nowrap;
+    .link-arrow {
+        width: 0.75em;
+        height: 0.75em;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.25;
+        stroke-linecap: round;
+        stroke-linejoin: round;
         flex-shrink: 0;
     }
 
-    .role-block-current .role-date {
-        color: #2563eb;
-        font-weight: 500;
+    /* ── Video block (lite YouTube embed) ── */
+    .video-block {
+        margin: 0.75rem 0 0.25rem 0;
     }
 
-    /* ── Animated drone ── */
-    .drone {
-        display: inline-flex;
-        width: 2.25rem;
-        height: 1.5rem;
-        color: #2563eb;
-        animation: drone-hover 2.6s ease-in-out infinite;
-        transform-origin: center;
-        vertical-align: middle;
-    }
-
-    .drone svg {
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-    }
-
-    .prop {
-        animation: prop-spin 0.18s linear infinite;
-    }
-
-    @keyframes prop-spin {
-        from {
-            transform: scaleX(1);
-        }
-        50% {
-            transform: scaleX(0.1);
-        }
-        to {
-            transform: scaleX(-1);
-        }
-    }
-
-    @keyframes drone-hover {
-        0%,
-        100% {
-            transform: translate(0, 0) rotate(-2deg);
-        }
-        25% {
-            transform: translate(2px, -2px) rotate(1deg);
-        }
-        50% {
-            transform: translate(0, -3px) rotate(3deg);
-        }
-        75% {
-            transform: translate(-2px, -1px) rotate(-1deg);
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .drone,
-        .prop {
-            animation: none;
-        }
-    }
-
-    /* ── Tech tags ── */
-    .card-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.3125rem;
-        margin-top: 0.125rem;
-    }
-
-    .tag {
-        font-size: 0.6875rem;
-        font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
-        color: #6b7280;
-        background: #f3f4f6;
-        padding: 0.125rem 0.4375rem;
-        border-radius: 0.25rem;
-        letter-spacing: 0.01em;
-        line-height: 1.4;
-    }
-
-    /* ═══════════════ Image stack (fan-out) ═══════════════ */
-    .img-stack {
+    .video-lite {
         position: relative;
-        height: 5.5rem;
-        margin: 0.625rem 0 0.25rem 0;
-    }
-
-    .img-stack-item {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 7rem;
-        height: 5rem;
-        border-radius: 0.5rem;
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        padding: 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.625rem;
         overflow: hidden;
-        border: 2px solid #e5e7eb;
-        background: #f9fafb;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        background: #111827;
         cursor: pointer;
-        transition:
-            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            filter 0.25s ease,
-            border-color 0.25s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }
 
-    .stack-img {
+    .video-thumb {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
+        transition: transform 0.4s ease;
     }
 
-    .img-stack-item:nth-child(1) {
-        z-index: 2;
-        transform: rotate(-2deg) translate(0, 0);
+    .video-lite:hover .video-thumb {
+        transform: scale(1.02);
     }
 
-    .img-stack-item:nth-child(2) {
-        z-index: 1;
-        transform: rotate(1.5deg) translate(1.5rem, 0.25rem);
+    .video-play {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .img-stack-item:nth-child(3) {
-        z-index: 0;
-        transform: rotate(4deg) translate(3rem, 0.5rem);
+    .video-play svg {
+        width: 3.5rem;
+        height: 3.5rem;
+        padding: 0.9rem 0.8rem 0.9rem 1rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        fill: #111827;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease;
     }
 
-    .img-stack.is-fanned .img-stack-item:nth-child(1) {
-        transform: rotate(-1deg) translate(0, 0) scale(1.04);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-        z-index: 10;
+    .video-lite:hover .video-play svg {
+        transform: scale(1.06);
     }
 
-    .img-stack.is-fanned .img-stack-item:nth-child(2) {
-        transform: rotate(0.5deg) translate(7.5rem, 0) scale(1.04);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-        z-index: 9;
+    .video-lite iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
     }
 
-    .img-stack.is-fanned .img-stack-item:nth-child(3) {
-        transform: rotate(1deg) translate(15rem, 0) scale(1.04);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-        z-index: 8;
+    .video-caption {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        margin-top: 0.5rem;
+    }
+
+    .video-caption-main {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .video-caption-sub {
+        font-size: 0.75rem;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    .project-link:hover {
+        color: #2563eb;
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
 
     /* ── Bullet list ── */
@@ -805,19 +750,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
 
         .amazon-logo {
             max-height: 1.25rem;
-        }
-
-        .img-stack {
-            height: 4.5rem;
-        }
-
-        .img-stack-item {
-            width: 5.5rem;
-            height: 4rem;
-        }
-
-        .img-stack-item:nth-child(2) {
-            transform: rotate(1.5deg) translate(1rem, 0.25rem);
         }
     }
 
@@ -881,27 +813,6 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         color: #9ca3af;
     }
 
-    :global(.dark) .role-title {
-        color: #e5e7eb;
-    }
-
-    :global(.dark) .role-block {
-        border-top-color: rgba(75, 85, 99, 0.5);
-    }
-
-    :global(.dark) .role-block-current .role-date {
-        color: #60a5fa;
-    }
-
-    :global(.dark) .drone {
-        color: #60a5fa;
-    }
-
-    :global(.dark) .tag {
-        background: rgba(55, 65, 81, 0.5);
-        color: #9ca3af;
-    }
-
     :global(.dark) .card-bullets li {
         color: #d1d5db;
     }
@@ -910,20 +821,23 @@ import traffic2 from '../assets/projects/traffic-2.jpg';
         color: #4b5563;
     }
 
+    :global(.dark) .video-lite {
+        border-color: rgba(75, 85, 99, 0.5);
+    }
+
+    :global(.dark) .video-caption-main {
+        color: #e5e7eb;
+    }
+
+    :global(.dark) .video-caption-sub {
+        color: #9ca3af;
+    }
+
     :global(.dark) .project-link {
         color: #60a5fa;
     }
 
     :global(.dark) .project-link:hover {
         color: #93c5fd;
-    }
-
-    :global(.dark) .img-stack-item {
-        border-color: #4b5563;
-        background: #1f2937;
-    }
-
-    :global(.dark) .img-stack-item:hover {
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
     }
 </style>
